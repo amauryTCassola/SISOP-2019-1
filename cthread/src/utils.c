@@ -3,21 +3,14 @@
 #include <string.h>
 #include "../include/support.h"
 #include "../include/cthread.h"
-
-//Declaração das 3 filas de aptos utilizada pelo escalonador: prioridades alta, média e baixa
-PFILA2 high_priority_queue;
-PFILA2 average_priority_queue;
-PFILA2 low_priority_queue;
+#include "../include/cdata.h"
+#include "../include/utils.h"
 
 
 /*-----------------------------------------------------------------------------------------
-
 Função:	Inicializa as filas de aptos
-
 Ret:	==0, se conseguiu
-
 	!=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
-
 ------------------------------------------------------------------------------------------*/
 int cinit_queues() {
     int queues_creation_status = 0;
