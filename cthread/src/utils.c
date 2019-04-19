@@ -29,7 +29,7 @@ Retorno:
 	Quando executada corretamente: retorna 0
 	Caso contrário, retorna -9
 ******************************************************************************/
-int dispatcher_para_fila_de_aptos(TCB_t* thread_leaving_CPU, TCB_t* thread_arriving_CPU){
+int dispatcher_cpu_fila_de_aptos(TCB_t* thread_leaving_CPU, TCB_t* thread_arriving_CPU){
 
     status = 0;
 
@@ -66,8 +66,47 @@ int dispatcher_para_fila_de_aptos(TCB_t* thread_leaving_CPU, TCB_t* thread_arriv
 Parâmetros:
 Retorno:
 	Quando executada corretamente: retorna 0
-	Caso contrário, retorna -9
+	Caso contrário, retorna diferente de 0
 ******************************************************************************/
 int escalonador(){
-    
+    int status_fila_aptos;
+    int status_remocao_fila_aptos;
+    int status_final;
+
+    chosen_thread = (TCB_t*)malloc(sizeof(TCB_t)); // variável que representa a thread que será selecionada pelo escalonador
+    executing_thread = (TCB_t*)malloc(sizeof(TCB_t));
+
+    status = FirstFila2(high_priority_queue);
+    if(status == 0){
+        &chosen_thread = *GetAtIteratorFila2(high_priority_queue);
+        status_remocao_fila_aptos = DeleteAtIteratorFila2(high_priority_queue);
+    }
+    else{
+            status = FirstFila2(average_priority_queue);
+            if(status == 0){
+                &chosen_thread = *GetAtIteratorFila2(average_priority_queue);
+                status_remocao_fila_aptos = DeleteAtIteratorFila2(average_priority_queue);
+            }
+            else{
+                status = FirstFila2(low_priority_queue);
+                if(status == 0){
+                    &chosen_thread = *GetAtIteratorFila2(low_priority_queue);
+                    status_remocao_fila_aptos = DeleteAtIteratorFila2(low_priority_queue);
+                }
+                else{
+                    //TO DO
+                    // &chosen_thread = THREAD MAIN (LOWEST PRIORITY)
+                }
+            }
+
+    }
+
+    // lembrando que thread_in_execution é a variável global que representa a thread que está em execução
+
+    executing_thread = thread_in_execution; //guardamos a thread que está ocupando a CPU na variável executing_thread
+    thread_in_execution = chosen_thread; //atualizamos a variável global que representa a thread em execução com a thread escolhida pelo escalonador
+    free(chosen_thread); // desaloca a memória ocupada pela variável chosen_thread
+    status_final = dispatcher_cpu_fila_de_aptos(executing_thread, thread_in_execution)
+
+    return status_final;
 }
