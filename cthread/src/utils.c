@@ -96,8 +96,7 @@ int escalonador(){
                     status_remocao_fila_aptos = DeleteAtIteratorFila2(low_priority_queue);
                 }
                 else{
-                    //TO DO
-                    // &chosen_thread = THREAD MAIN (LOWEST PRIORITY)
+                    chosen_thread = thread_main;
                 }
             }
 
