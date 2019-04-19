@@ -201,5 +201,5 @@ int escalonador_cjoin() {
     // põe a thread escolhida pelo escalonador em execução
     setcontext(&chosen_thread->context);
 
-    return status_final;
+    return 0;
 }
