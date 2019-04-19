@@ -21,4 +21,21 @@ Retorno:
 int cinit_queues();
 
 
+/******************************************************************************
+Parâmetros:
+Retorno:
+	Quando executada corretamente: retorna 0
+	Caso contrário, retorna -9
+******************************************************************************/
+int dispatcher_para_fila_de_aptos(TCB_t thread_leaving_CPU, TCB_t thread_arriving_CPU);
+
+/******************************************************************************
+Parâmetros:
+Retorno:
+	Quando executada corretamente: retorna 0
+	Caso contrário, retorna -9
+******************************************************************************/
+int escalonador();
+
+
 #endif
