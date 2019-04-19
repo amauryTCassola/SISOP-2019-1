@@ -107,7 +107,7 @@ int escalonador_cyield(){
     executing_thread = thread_in_execution; //guardamos a thread que está ocupando a CPU na variável executing_thread
     thread_in_execution = chosen_thread; //atualizamos a variável global que representa a thread em execução com a thread escolhida pelo escalonador
     free(chosen_thread); // desaloca a memória ocupada pela variável chosen_thread
-    status_final = dispatcher(executing_thread, thread_in_execution);
+    status_final = dispatcher(&executing_thread, &thread_in_execution);
 
     return status_final;
 }
@@ -199,7 +199,7 @@ int escalonador_cjoin() {
     free(chosen_thread); // desaloca a memória ocupada pela variável chosen_thread
     
     // põe a thread escolhida pelo escalonador em execução
-    setcontext(&chosen_thread->context);
+    setcontext(&thread_in_execution->context);
 
     return 0;
 }
