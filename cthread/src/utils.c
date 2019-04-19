@@ -31,7 +31,7 @@ Retorno:
 ******************************************************************************/
 int dispatcher(TCB_t *thread_leaving_CPU, TCB_t *thread_arriving_CPU){
 
-    status = 0;
+    int status = 0;
 
     //salva o contexto da thread que está em execução e que vai perder a CPU
     getcontext(&thread_leaving_CPU->context);
@@ -124,7 +124,7 @@ Função para o David usar para inserir threads bloqueadas ou recem criadas
 na fila de aptos
 ******************************************************************************/
 int insere_na_fila_de_aptos(TCB_t *thread){
-    int status;
+    int status = 0;
 
     //coloca a thread que está saindo da execução na fila de aptos correspondente a sua prioridade
     switch(&thread->prio){
