@@ -30,8 +30,14 @@ int csetprio(int tid, int prio) {
 
 }
 
+
+/*-------------------------------------------------------------------------------------------------
+Função:	Cedência voluntária da CPU
+Ret:	== 0, se conseguiu
+	    != 0, caso contrário 
+---------------------------------------------------------------------------------------------------*/
 int cyield(void) {
-	return -1;
+	return escalonador();
 }
 
 int cjoin(int tid) {
