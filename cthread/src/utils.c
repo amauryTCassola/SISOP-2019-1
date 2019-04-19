@@ -29,7 +29,7 @@ Retorno:
 	Quando executada corretamente: retorna 0
 	Caso contrário, retorna -9
 ******************************************************************************/
-int dispatcher_cpu_fila_de_aptos(TCB_t* thread_leaving_CPU, TCB_t* thread_arriving_CPU){
+int dispatcher(TCB_t *thread_leaving_CPU, TCB_t *thread_arriving_CPU){
 
     status = 0;
 
@@ -43,13 +43,15 @@ int dispatcher_cpu_fila_de_aptos(TCB_t* thread_leaving_CPU, TCB_t* thread_arrivi
     switch(&thread_leaving_CPU->prio){
         case 0:
             status += AppendFila2(high_priority_queue, *thread_leaving_CPU);
-            break
+            break;
         case 1:
             status += AppendFila2(average_priority_queue, *thread_leaving_CPU);
-            break
+            break;
         case 2:
             status += AppendFila2(low_priority_queue, *thread_leaving_CPU);
-            break
+            break;
+        case PRIORITY_MAIN:
+            break;
         default:
             return -9;
     }
@@ -106,7 +108,45 @@ int escalonador(){
     executing_thread = thread_in_execution; //guardamos a thread que está ocupando a CPU na variável executing_thread
     thread_in_execution = chosen_thread; //atualizamos a variável global que representa a thread em execução com a thread escolhida pelo escalonador
     free(chosen_thread); // desaloca a memória ocupada pela variável chosen_thread
-    status_final = dispatcher_cpu_fila_de_aptos(executing_thread, thread_in_execution)
+    status_final = dispatcher(executing_thread, thread_in_execution)
 
     return status_final;
+}
+
+
+
+/******************************************************************************
+Parâmetros:
+Retorno:
+	Quando executada corretamente: retorna 0
+	Caso contrário, retorna -9
+
+Função para o David usar para inserir threads bloqueadas ou recem criadas
+na fila de aptos
+******************************************************************************/
+int insere_na_fila_de_aptos(TCB_t *thread){
+    int status;
+
+    //coloca a thread que está saindo da execução na fila de aptos correspondente a sua prioridade
+    switch(&thread->prio){
+        case 0:
+            status += AppendFila2(high_priority_queue, *thread);
+            break;
+        case 1:
+            status += AppendFila2(average_priority_queue, *thread);
+            break;
+        case 2:
+            status += AppendFila2(low_priority_queue, *thread);
+            break;
+        case PRIORITY_MAIN:
+            break;
+        default:
+            return -9;
+    }
+
+    if(status != 0){
+        return -9;
+    }
+
+    return 0;  
 }
