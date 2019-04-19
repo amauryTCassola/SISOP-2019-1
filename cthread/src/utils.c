@@ -19,7 +19,7 @@ int cinit_queues() {
     queues_creation_status += CreateFila2(average_priority_queue); 
     queues_creation_status += CreateFila2(low_priority_queue); 
 
-    return queues_creation_status
+    return queues_creation_status;
 }
 
 
