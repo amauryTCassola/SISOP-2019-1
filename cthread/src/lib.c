@@ -37,7 +37,7 @@ Ret:	== 0, se conseguiu
 	    != 0, caso contrário 
 ---------------------------------------------------------------------------------------------------*/
 int cyield(void) {
-	return escalonador();
+	return escalonador_cyield();
 }
 
 int cjoin(int tid) {
