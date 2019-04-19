@@ -39,7 +39,7 @@ int dispatcher_para_fila_de_aptos(TCB_t* thread_leaving_CPU, TCB_t* thread_arriv
     //põe a thread que vai entrar na CPU em execução
     setcontext(&thread_arriving_CPU->context);
 
-    //coloca a thread que está saindo da execução na fila de aptos correspondente a sua execução
+    //coloca a thread que está saindo da execução na fila de aptos correspondente a sua prioridade
     switch(&thread_leaving_CPU->prio){
         case 0:
             status += AppendFila2(high_priority_queue, *thread_leaving_CPU);
