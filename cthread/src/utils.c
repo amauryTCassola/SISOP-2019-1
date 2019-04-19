@@ -42,13 +42,13 @@ int dispatcher(TCB_t *thread_leaving_CPU, TCB_t *thread_arriving_CPU){
     //coloca a thread que está saindo da execução na fila de aptos correspondente a sua prioridade
     switch(thread_leaving_CPU->prio){
         case 0:
-            status += AppendFila2(high_priority_queue, *thread_leaving_CPU);
+            status += AppendFila2(high_priority_queue, thread_leaving_CPU);
             break;
         case 1:
-            status += AppendFila2(average_priority_queue, *thread_leaving_CPU);
+            status += AppendFila2(average_priority_queue, thread_leaving_CPU);
             break;
         case 2:
-            status += AppendFila2(low_priority_queue, *thread_leaving_CPU);
+            status += AppendFila2(low_priority_queue, thread_leaving_CPU);
             break;
         case PRIORITY_MAIN:
             break;
@@ -129,13 +129,13 @@ int insere_na_fila_de_aptos(TCB_t *thread){
     //coloca a thread que está saindo da execução na fila de aptos correspondente a sua prioridade
     switch(&thread->prio){
         case 0:
-            status += AppendFila2(high_priority_queue, *thread);
+            status += AppendFila2(high_priority_queue, thread);
             break;
         case 1:
-            status += AppendFila2(average_priority_queue, *thread);
+            status += AppendFila2(average_priority_queue, thread);
             break;
         case 2:
-            status += AppendFila2(low_priority_queue, *thread);
+            status += AppendFila2(low_priority_queue, thread);
             break;
         case PRIORITY_MAIN:
             break;
