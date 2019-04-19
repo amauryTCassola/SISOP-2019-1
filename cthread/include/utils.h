@@ -40,7 +40,7 @@ Retorno:
 	Quando executada corretamente: retorna 0
 	Caso contrário, retorna diferente de zero
 ******************************************************************************/
-int escalonador();
+int escalonador_cyield();
 
 
 /******************************************************************************
@@ -49,10 +49,23 @@ Retorno:
 	Quando executada corretamente: retorna 0
 	Caso contrário, retorna -9
 
+ATENÇÃO:
 Função para o David usar para inserir threads bloqueadas ou recem criadas
 na fila de aptos
 ******************************************************************************/
 int insere_na_fila_de_aptos(TCB_t *thread);
 
+
+/***********************************************************************************************
+Parâmetros:
+Retorno:
+	Quando executada corretamente: retorna 0
+	Caso contrário, retorna diferente de zero
+
+ATENÇÃO:
+Função para ser chamada quando a thread em execução foi para o estado bloqueado, e então
+esse escalonador vai escolher a nova thread na fila de aptos a ser executada
+*************************************************************************************************/
+int escalonador_cjoin();
 
 #endif
