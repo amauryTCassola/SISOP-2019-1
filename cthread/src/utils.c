@@ -34,13 +34,13 @@ int dispatcher(TCB_t *thread_leaving_CPU, TCB_t *thread_arriving_CPU){
     int status = 0;
 
     //salva o contexto da thread que está em execução e que vai perder a CPU
-    getcontext(&thread_leaving_CPU->context);
+    getcontext(thread_leaving_CPU->context);
 
     //põe a thread que vai entrar na CPU em execução
-    setcontext(&thread_arriving_CPU->context);
+    setcontext(thread_arriving_CPU->context);
 
     //coloca a thread que está saindo da execução na fila de aptos correspondente a sua prioridade
-    switch(&thread_leaving_CPU->prio){
+    switch(thread_leaving_CPU->prio){
         case 0:
             status += AppendFila2(high_priority_queue, *thread_leaving_CPU);
             break;
