@@ -70,8 +70,8 @@ Retorno:
 	Quando executada corretamente: retorna 0
 	Caso contrário, retorna diferente de 0
 ******************************************************************************/
-int escalonador(){
-    int status_fila_aptos;
+int escalonador_cyield(){
+    int status;
     int status_remocao_fila_aptos;
     int status_final;
 
@@ -148,4 +148,58 @@ int insere_na_fila_de_aptos(TCB_t *thread){
     }
 
     return 0;  
+}
+
+
+/***********************************************************************************************
+Parâmetros:
+Retorno:
+	Quando executada corretamente: retorna 0
+	Caso contrário, retorna diferente de zero
+
+ATENÇÃO:
+Função para ser chamada quando a thread em execução foi para o estado bloqueado, e então
+esse escalonador vai escolher a nova thread na fila de aptos a ser executada
+*************************************************************************************************/
+int escalonador_cjoin() {
+
+    int status;
+    int status_fila_aptos;
+    int status_remocao_fila_aptos;
+
+    chosen_thread = (TCB_t*)malloc(sizeof(TCB_t)); // variável que representa a thread que será selecionada pelo escalonador
+
+    status = FirstFila2(high_priority_queue);
+    if(status == 0){
+        &chosen_thread = *GetAtIteratorFila2(high_priority_queue);
+        status_remocao_fila_aptos = DeleteAtIteratorFila2(high_priority_queue);
+    }
+    else{
+            status = FirstFila2(average_priority_queue);
+            if(status == 0){
+                &chosen_thread = *GetAtIteratorFila2(average_priority_queue);
+                status_remocao_fila_aptos = DeleteAtIteratorFila2(average_priority_queue);
+            }
+            else{
+                status = FirstFila2(low_priority_queue);
+                if(status == 0){
+                    &chosen_thread = *GetAtIteratorFila2(low_priority_queue);
+                    status_remocao_fila_aptos = DeleteAtIteratorFila2(low_priority_queue);
+                }
+                else{
+                    chosen_thread = thread_main;
+                }
+            }
+
+    }
+
+    // lembrando que thread_in_execution é a variável global que representa a thread que está em execução
+
+    thread_in_execution = chosen_thread; //atualizamos a variável global que representa a thread em execução com a thread escolhida pelo escalonador
+    free(chosen_thread); // desaloca a memória ocupada pela variável chosen_thread
+    
+    // põe a thread escolhida pelo escalonador em execução
+    setcontext(&chosen_thread->context);
+
+    return status_final;
 }
