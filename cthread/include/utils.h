@@ -2,7 +2,7 @@
 #ifndef __CUTILS_
 #define __CUTILS_
 #define PRIORITY_MAIN 3
-#define CODIGO_ERRO -1
+#define CODIGO_ERRO -9
 #define CODIGO_SUCESSO 0
 
 //Declaração das 3 filas de aptos utilizada pelo escalonador: prioridades alta, média e baixa
