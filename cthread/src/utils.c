@@ -6,7 +6,6 @@
 #include "../include/cdata.h"
 #include "../include/utils.h"
 
-
 /*-----------------------------------------------------------------------------------------
 Função:	Inicializa as filas de aptos
 Ret:	==0, se conseguiu
@@ -27,7 +26,7 @@ int cinit_queues() {
 Parâmetros:
 Retorno:
 	Quando executada corretamente: retorna 0
-	Caso contrário, retorna -9
+	Caso contrário, retorna CODIGO_ERRO
 ******************************************************************************/
 int dispatcher(TCB_t *thread_leaving_CPU, TCB_t *thread_arriving_CPU){
 
@@ -53,14 +52,14 @@ int dispatcher(TCB_t *thread_leaving_CPU, TCB_t *thread_arriving_CPU){
         case PRIORITY_MAIN:
             break;
         default:
-            return -9;
+            return CODIGO_ERRO;
     }
 
     if(status != 0){
-        return -9;
+        return CODIGO_ERRO;
     }
 
-    return 0;    
+    return CODIGO_SUCESSO;    
 }
 
 
@@ -118,7 +117,7 @@ int escalonador_cyield(){
 Parâmetros:
 Retorno:
 	Quando executada corretamente: retorna 0
-	Caso contrário, retorna -9
+	Caso contrário, retorna CODIGO_ERRO
 
 Função para o David usar para inserir threads bloqueadas ou recem criadas
 na fila de aptos
@@ -140,14 +139,14 @@ int insere_na_fila_de_aptos(TCB_t *thread){
         case PRIORITY_MAIN:
             break;
         default:
-            return -9;
+            return CODIGO_ERRO;
     }
 
     if(status != 0){
-        return -9;
+        return CODIGO_ERRO;
     }
 
-    return 0;  
+    return CODIGO_SUCESSO;  
 }
 
 
@@ -201,5 +200,5 @@ int escalonador_cjoin() {
     // põe a thread escolhida pelo escalonador em execução
     setcontext(&thread_in_execution->context);
 
-    return 0;
+    return CODIGO_SUCESSO;
 }

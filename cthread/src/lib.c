@@ -8,24 +8,24 @@
 
 
 int ccreate (void* (*start)(void*), void *arg, int prio) {
-	return -1;
+	return CODIGO_ERRO;
 }
 
 /*-------------------------------------------------------------------------------------------------
 Função:	Alterando a prioridade das threads
-Ret:	==  0, se conseguiu
-	    == -9, caso contrário 
+Ret:	CODIGO_SUCESSO, se conseguiu
+	    CODIGO_ERRO, caso contrário 
 Lógica: Uma thread pode alterar a sua própria prioridade. Testa se o tid passado como parâmetro 
 é igual ao tid da thread em execução. Caso verdadeiro, atualiza a prioridade com o valor passado 
-como parâmetro. Caso contrário, retorna -9 como erro
+como parâmetro. Caso contrário, retorna CODIGO_ERRO como erro
 ---------------------------------------------------------------------------------------------------*/
 int csetprio(int tid, int prio) {
     if(tid == thread_in_execution->tid) {
         thread_in_execution->prio = prio;
-        return 0;
+        return CODIGO_SUCESSO;
     }
     else{
-	    return -9;
+	    return CODIGO_ERRO;
     }
 
 }
@@ -33,31 +33,31 @@ int csetprio(int tid, int prio) {
 
 /*-------------------------------------------------------------------------------------------------
 Função:	Cedência voluntária da CPU
-Ret:	== 0, se conseguiu
-	    != 0, caso contrário 
+Ret:	CODIGO_SUCESSO, se conseguiu
+	    CODIGO_ERRO, caso contrário 
 ---------------------------------------------------------------------------------------------------*/
 int cyield(void) {
 	return escalonador_cyield();
 }
 
 int cjoin(int tid) {
-	return -1;
+	return CODIGO_ERRO;
 }
 
 int csem_init(csem_t *sem, int count) {
-	return -1;
+	return CODIGO_ERRO;
 }
 
 int cwait(csem_t *sem) {
-	return -1;
+	return CODIGO_ERRO;
 }
 
 int csignal(csem_t *sem) {
-	return -1;
+	return CODIGO_ERRO;
 }
 
 int cidentify (char *name, int size) {
     char[] components = "Amaury Teixeira Cassola 287704\nBruno Ramos Toresan 291332\nDavid Mees Knijnik 264489";
 	strncpy(name, components, size);
-	return 0;
+	return CODIGO_SUCESSO;
 }
