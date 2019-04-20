@@ -15,19 +15,18 @@ int ccreate (void* (*start)(void*), void *arg, int prio) {
 Função:	Alterando a prioridade das threads
 Ret:	CODIGO_SUCESSO, se conseguiu
 	    CODIGO_ERRO, caso contrário 
-Lógica: Uma thread pode alterar a sua própria prioridade. Testa se o tid passado como parâmetro 
-é igual ao tid da thread em execução. Caso verdadeiro, atualiza a prioridade com o valor passado 
-como parâmetro. Caso contrário, retorna CODIGO_ERRO como erro
+Lógica: Atualiza a prioridade da variável global thread_in_execution com o valor passado como 
+parametro
 ---------------------------------------------------------------------------------------------------*/
 int csetprio(int tid, int prio) {
-    if(tid == thread_in_execution->tid) {
-        thread_in_execution->prio = prio;
-        return CODIGO_SUCESSO;
-    }
-    else{
-	    return CODIGO_ERRO;
-    }
-
+		if(prio == 0 || prio == 1 || prio == 2 || prio == PRIORITY_MAIN) {
+			thread_in_execution.prio = prio;
+			return CODIGO_SUCESSO;
+		}
+		else {
+			return CODIGO_ERRO;
+		}
+        
 }
 
 
