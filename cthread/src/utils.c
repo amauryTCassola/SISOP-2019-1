@@ -127,7 +127,7 @@ int insere_na_fila_de_aptos(TCB_t *thread){
     int status = 0;
 
     //coloca a thread que está saindo da execução na fila de aptos correspondente a sua prioridade
-    switch(&thread->prio){
+    switch(thread->prio){
         case 0:
             status += AppendFila2(high_priority_queue, thread);
             break;
