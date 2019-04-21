@@ -9,7 +9,7 @@
 /*-----------------------------------------------------------------------------------------
 Função:	Inicializa as filas de aptos
 Ret: ==0, se conseguiu
-     !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
+	 !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
 ------------------------------------------------------------------------------------------*/
 int cinit_queues() {
     int queues_creation_status = 0;
@@ -19,6 +19,42 @@ int cinit_queues() {
     queues_creation_status += CreateFila2(low_priority_queue); 
 
     return queues_creation_status;
+}
+
+
+/*-----------------------------------------------------------------------------------------
+Função:	Implementação do chaveamento de contexto e do despachante (dispatcher)
+
+Parâmetros: 
+thread_leaving_cpu (ponteiro para a thread que está perdendo a CPU),
+new_state_thread_leaving_cpu (novo estado da thread que está perdendo a CPU: PROCST_APTO, PROCST_BLOQ, PROCST_TERMINO)
+
+Ret: void
+------------------------------------------------------------------------------------------*/
+void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu){
+
+    TCB_t thread_arriving_CPU = (TCB_t*)malloc(sizeof(TCB_t));    
+
+    thread_leaving_cpu->state = state_thread_leaving_cpu;
+
+    // escolhe a thread que vai chegar na CPU antes de tirar a thread que está executando na CPU
+    // para evitar postergação indefinida
+    thread_arriving_CPU = escalonador();
+    thread_arriving_CPU->state = PROCST_EXEC;
+    thread_in_execution = thread_arriving_CPU; //atualiza a variável global com a thread vinda do escalonador
+
+    if(state_thread_leaving_cpu == PROCST_APTO){
+        getcontext(thread_leaving_cpu->context);
+        insere_na_fila_de_aptos(thread_leaving_cpu);
+    }
+    else if(state_thread_leaving_cpu == PROCST_TERMINO){
+        thread_leaving_cpu = NULL;
+    }
+    else if(state_thread_leaving_cpu == PROCST_BLOQ){
+        // FUNÇÃO QUE O AMAURY VAI FAZER
+    }
+
+    setcontext(&thread_in_execution);
 }
 
 
