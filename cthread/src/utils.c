@@ -35,7 +35,7 @@ void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu){
 
     TCB_t thread_arriving_CPU = (TCB_t*)malloc(sizeof(TCB_t));    
 
-    thread_leaving_cpu->state = state_thread_leaving_cpu;
+    thread_leaving_cpu->state = new_state_thread_leaving_cpu;
 
     // escolhe a thread que vai chegar na CPU antes de tirar a thread que está executando na CPU
     // para evitar postergação indefinida
