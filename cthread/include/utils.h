@@ -19,7 +19,7 @@ TCB_t thread_main;
 /*-----------------------------------------------------------------------------------------
 Função:	Inicializa as filas de aptos
 Ret: ==0, se conseguiu
-	 !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
+     !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
 ------------------------------------------------------------------------------------------*/
 int cinit_queues();
 
