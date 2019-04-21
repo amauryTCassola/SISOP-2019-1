@@ -57,7 +57,7 @@ int csem_init(csem_t *sem, int count) {
 
 int cwait(csem_t *sem) {
 	if(sem->count <= 0){
-		semaforo_insere_na_fila_de_bloqueados(sem, thread_in_execution.tid, thread_in_execution.prio)
+		semaforo_insere_na_fila_de_bloqueados(sem, thread_in_execution.tid, thread_in_execution.prio);
 		dispatcher(PROCST_BLOQ);
 	}
 	sem->count--;
@@ -66,7 +66,7 @@ int cwait(csem_t *sem) {
 
 int csignal(csem_t *sem) {
 	sem->count++;
-	return semaforo_retira_um_da_fila_de_bloqueados(sem);;
+	return semaforo_retira_um_da_fila_de_bloqueados(sem);
 }
 
 int cidentify (char *name, int size) {

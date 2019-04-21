@@ -67,11 +67,11 @@ void dispatcher(int new_state_thread_leaving_cpu){
 		setcontext(thread_arriving_CPU->context);
     }
     else if(new_state_thread_leaving_cpu == PROCST_BLOQ){
-        // FUNÇÃO QUE O AMAURY VAI FAZER QUE PÕE UMA THREAD NO ESTADO BLOQUEADO
+		bloqueia(thread_leaving_cpu);
+		//inserimos a thread que está saindo na fila de aptos
+		swapcontext(thread_leaving_cpu->context, thread_arriving_CPU->context);
     }
 }
-
-
 
 /******************************************************************************
 Parâmetros: thread que será inserida na fila de aptos
@@ -147,15 +147,46 @@ TCB_t escalonador() {
 
     return chosen_thread;
 }
+
+/******************************************************************************
+Parâmetros: thread que será inserida na fila de bloqueados
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int bloqueia(TCB_t *thread){
+	
+	int status = 0;
+	
+	status = AppendFila2(blocked_queue, thread);
+	
+	if(status == CODIGO_SUCESSO) return CODIGO_SUCESSO;
+	else return CODIGO_ERRO;
+}
+
 /******************************************************************************
 Parâmetros: um tid
 Retorno:
 	Quando executada corretamente: retorna CODIGO_SUCESSO
 	Quando executada erroneamente: retorna CODIGO_ERRO
 ******************************************************************************/
-int desbloqueia(int tid){
+int desbloqueia(int _tid){
+	TCB_t* thread_a_ser_desbloqueada = (TCB_t*)malloc(sizeof(TCB_t));
+	int retorno_next_fila = CODIGO_SUCESSO;
+	
 	FirstFila2(blocked_queue);
 	
+	while(retorno_next_fila == CODIGO_SUCESSO){
+		if(GetAtIteratorFila2(blocked_queue)->tid == _tid) break;
+		retorno_next_fila = NextFila2(blocked_queue);
+	}
+	
+	if(retorno_next_fila == CODIGO_SUCESSO){
+		*thread_a_ser_desbloqueada = *GetAtIteratorFila2(blocked_queue);
+		DeleteAtIteratorFila2(blocked_queue);
+		return insere_na_fila_de_aptos(thread_a_ser_desbloqueada);
+	}
+	else return CODIGO_ERRO;
 	
 }
 

@@ -64,6 +64,22 @@ Retorno: Retorna uma variável do tipo TCB_t que é a thread que o escalonador s
 *************************************************************************************************/
 TCB_t escalonador();
 
+/******************************************************************************
+Parâmetros: thread que será inserida na fila de bloqueados
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int bloqueia(TCB_t *thread);
+
+/******************************************************************************
+Parâmetros: o tid de uma thread que deve ser retirada da fila de bloqueadas e colocada na fila de aptos
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int desbloqueia(int _tid);
+
 
 /******************************************************************************
 Parâmetros: ponteiro para um semáforo, o tid a ser inserido em uma fila de bloqueados deste semáforo e a prioridade da thread representada por este tid
