@@ -9,7 +9,7 @@
 /*-----------------------------------------------------------------------------------------
 Função:	Inicializa as filas de aptos
 Ret: ==0, se conseguiu
-	 !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
+     !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
 ------------------------------------------------------------------------------------------*/
 int cinit_queues() {
     int queues_creation_status = 0;
