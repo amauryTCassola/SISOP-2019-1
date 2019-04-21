@@ -36,7 +36,7 @@ Ret:	CODIGO_SUCESSO, se conseguiu
 	    CODIGO_ERRO, caso contrário 
 ---------------------------------------------------------------------------------------------------*/
 int cyield(void) {
-	dispatcher(&thread_in_execution, PROCST_APTO);
+	dispatcher(PROCST_APTO);
 	return CODIGO_SUCESSO;
 }
 
@@ -45,15 +45,28 @@ int cjoin(int tid) {
 }
 
 int csem_init(csem_t *sem, int count) {
-	return CODIGO_ERRO;
+	sem = (csem_t*)malloc(sizeof(csem_t));
+	sem->count = count;
+	if(	CreateFila2(sem->low_prio_blocked_list) == CODIGO_SUCESSO &&
+		CreateFila2(sem->avg_prio_blocked_list) == CODIGO_SUCESSO &&
+		CreateFila2(sem->high_prio_blocked_list) == CODIGO_SUCESSO	)
+		return CODIGO_SUCESSO;
+	else
+		return CODIGO_ERRO;
 }
 
 int cwait(csem_t *sem) {
-	return CODIGO_ERRO;
+	if(sem->count <= 0){
+		semaforo_insere_na_fila_de_bloqueados(sem, thread_in_execution.tid, thread_in_execution.prio)
+		dispatcher(PROCST_BLOQ);
+	}
+	sem->count--;
+	return CODIGO_SUCESSO;
 }
 
 int csignal(csem_t *sem) {
-	return CODIGO_ERRO;
+	sem->count++;
+	return semaforo_retira_um_da_fila_de_bloqueados(sem);;
 }
 
 int cidentify (char *name, int size) {
