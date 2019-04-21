@@ -27,8 +27,11 @@ regra2: #dependências para a regra2
 regran: #dependências para a regran
 	$(CC) -o $(BIN_DIR)regran $(SRC_DIR)regran.c -Wall
 	
-teste: #teste para o negocio
-	$(CC) -c src/lib.c src/utils.c  -Wall
+testeObj: #teste para o negocio
+	$(CC) -c src/lib.c src/utils.c  -Wall teste
+	
+testeExe: #teste para o negocio
+	$(CC) lib.o utils.o -o teste
 
 clean:
 	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*~ *~

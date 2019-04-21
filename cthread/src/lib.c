@@ -38,7 +38,7 @@ int ccreate (void* (*start)(void*), void *arg, int prio) {
 
     //Refresh number of threads created
 	numberOfCreatedThreads++;
-	return -1;
+	return numberOfCreatedThreads;
 }
 
 int csetprio(int tid, int prio) {
