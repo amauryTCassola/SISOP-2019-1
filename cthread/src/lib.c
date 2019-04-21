@@ -36,7 +36,8 @@ Ret:	CODIGO_SUCESSO, se conseguiu
 	    CODIGO_ERRO, caso contrário 
 ---------------------------------------------------------------------------------------------------*/
 int cyield(void) {
-	return CODIGO_ERRO;
+	dispatcher(&thread_in_execution, PROCST_APTO);
+	return CODIGO_SUCESSO;
 }
 
 int cjoin(int tid) {
