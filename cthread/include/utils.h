@@ -19,11 +19,17 @@ TCB_t thread_main;
 /*-----------------------------------------------------------------------------------------
 Função:	Inicializa as filas de aptos
 Ret: ==0, se conseguiu
-     !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
+	 !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
 ------------------------------------------------------------------------------------------*/
 int cinit_queues();
 
-
+/*-----------------------------------------------------------------------------------------
+Função:	Implementação do chaveamento de contexto e do despachante (dispatcher)
+Parâmetros: thread_leaving_cpu (ponteiro para a thread que está perdendo a CPU),
+            thread_leaving_cpu (ponteiro para a thread que está ganhando a CPU),
+Ret: void
+------------------------------------------------------------------------------------------*/
+void dispatcher(TCB_t *thread_leaving_cpu, TCB_t *thread_arriving_CPU);
 
 /******************************************************************************
 Parâmetros: thread que será inserida na fila de aptos
