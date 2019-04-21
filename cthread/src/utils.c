@@ -40,20 +40,20 @@ void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu){
     // escolhe a thread que vai chegar na CPU antes de tirar a thread que está executando na CPU
     // para evitar postergação indefinida
     thread_arriving_CPU = escalonador();
-    thread_arriving_CPU->state = PROCST_EXEC;
-    thread_in_execution = thread_arriving_CPU; //atualiza a variável global com a thread vinda do escalonador
+    thread_arriving_CPU.state = PROCST_EXEC;
 
-    if(state_thread_leaving_cpu == PROCST_APTO){
+    if(new_state_thread_leaving_cpu == PROCST_APTO){
         getcontext(thread_leaving_cpu->context);
         insere_na_fila_de_aptos(thread_leaving_cpu);
     }
-    else if(state_thread_leaving_cpu == PROCST_TERMINO){
+    else if(new_state_thread_leaving_cpu == PROCST_TERMINO){
         thread_leaving_cpu = NULL;
     }
-    else if(state_thread_leaving_cpu == PROCST_BLOQ){
-        // FUNÇÃO QUE O AMAURY VAI FAZER
+    else if(new_state_thread_leaving_cpu == PROCST_BLOQ){
+        // FUNÇÃO QUE O AMAURY VAI FAZER QUE PÕE UMA THREAD NO ESTADO BLOQUEADO
     }
 
+    thread_in_execution = thread_arriving_CPU; //atualiza a variável global com a thread vinda do escalonador
     setcontext(&thread_in_execution);
 }
 
