@@ -36,7 +36,7 @@ Ret:	CODIGO_SUCESSO, se conseguiu
 	    CODIGO_ERRO, caso contrário 
 ---------------------------------------------------------------------------------------------------*/
 int cyield(void) {
-	return escalonador_cyield();
+	return CODIGO_ERRO;
 }
 
 int cjoin(int tid) {
