@@ -25,11 +25,14 @@ int cinit_queues();
 
 /*-----------------------------------------------------------------------------------------
 Função:	Implementação do chaveamento de contexto e do despachante (dispatcher)
-Parâmetros: thread_leaving_cpu (ponteiro para a thread que está perdendo a CPU),
-            thread_leaving_cpu (ponteiro para a thread que está ganhando a CPU),
+
+Parâmetros: 
+thread_leaving_cpu (ponteiro para a thread que está perdendo a CPU),
+new_state_thread_leaving_cpu (novo estado da thread que está perdendo a CPU: PROCST_APTO, PROCST_BLOQ, PROCST_TERMINO)
+
 Ret: void
 ------------------------------------------------------------------------------------------*/
-void dispatcher(TCB_t *thread_leaving_cpu, TCB_t *thread_arriving_CPU);
+void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu);
 
 /******************************************************************************
 Parâmetros: thread que será inserida na fila de aptos
