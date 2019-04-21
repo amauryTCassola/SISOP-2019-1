@@ -13,12 +13,13 @@ Ret: ==0, se conseguiu
 	 !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
 ------------------------------------------------------------------------------------------*/
 int cinit_queues() {
+	
     int queues_creation_status = 0;
-
+/*
     queues_creation_status += CreateFila2(high_priority_queue);
     queues_creation_status += CreateFila2(average_priority_queue); 
     queues_creation_status += CreateFila2(low_priority_queue); 
-
+*/
     return queues_creation_status;
 }
 
@@ -33,7 +34,7 @@ new_state_thread_leaving_cpu (novo estado da thread que está perdendo a CPU: PR
 Ret: void
 ------------------------------------------------------------------------------------------*/
 void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu){
-
+/*
     TCB_t thread_arriving_CPU = (TCB_t*)malloc(sizeof(TCB_t));    
 
     thread_leaving_cpu->state = new_state_thread_leaving_cpu;
@@ -55,7 +56,7 @@ void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu){
     }
 
     thread_in_execution = thread_arriving_CPU; //atualiza a variável global com a thread vinda do escalonador
-    setcontext(&thread_in_execution);
+    setcontext(&thread_in_execution);*/
 }
 
 
@@ -67,7 +68,7 @@ Retorno:
 	Quando executada erroneamente: retorna CODIGO_ERRO
 ******************************************************************************/
 int insere_na_fila_de_aptos(TCB_t *thread){
-
+/*
 	int status = 0;
 
 	thread->state = PROCST_APTO;
@@ -89,7 +90,7 @@ int insere_na_fila_de_aptos(TCB_t *thread){
 	if(status != 0){
         return CODIGO_ERRO;
     } 
-	
+	*/
 	return CODIGO_SUCESSO;
 }
 
@@ -98,6 +99,7 @@ int insere_na_fila_de_aptos(TCB_t *thread){
 Parâmetros:
 Retorno: Retorna uma variável do tipo TCB_t que é a thread que o escalonador selecionou
 *************************************************************************************************/
+/*
 TCB_t escalonador() {
 
     int status;
@@ -129,4 +131,4 @@ TCB_t escalonador() {
     }
 
     return chosen_thread;
-}
+}*/
