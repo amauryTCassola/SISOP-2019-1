@@ -8,13 +8,15 @@
 #define STACK_SIZE 4096
 #define DEFAULTPRIORITY 1
 #define INITIALTID 1
+
+#define ERRO_INIT -2
+#define ERRO_PARAM -3
+#define ERRO_FILAS -4
+
 //Declaração das 3 filas de aptos utilizada pelo escalonador: prioridades alta, média e baixa
 PFILA2 high_priority_queue;
 PFILA2 average_priority_queue;
 PFILA2 low_priority_queue;
-
-#define ERRO_INIT -2
-#define ERRO_PARAM -3
 
 extern int numberOfCreatedThreads;
 

@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "../include/support.h"
 #include "../include/cthread.h"
@@ -10,10 +11,11 @@
 int ccreate (void* (*start)(void*), void *arg, int prio) {
 	
 	TCB_t *newThread;
+	int newTid;
 
     if(numberOfCreatedThreads == INITIALTID) 
     {
-      int initializedCorrectly = 1;//TODO InitializeCThreads();
+      int initializedCorrectly = cinit_queues();
       if(initializedCorrectly != 0)
       {
           return ERRO_INIT;
@@ -22,12 +24,12 @@ int ccreate (void* (*start)(void*), void *arg, int prio) {
 	if(prio<0 || prio>2){
 		return ERRO_PARAM;
 	}
-
+	newTid = numberOfCreatedThreads;
     //Initializes the new thread's TCB
     newThread = (TCB_t*)malloc(sizeof(TCB_t));
     newThread->prio = prio;
     newThread->state = PROCST_APTO;
-    newThread->tid = numberOfCreatedThreads;
+    newThread->tid = newTid;
     
     //Initializes the new thread's context
     getcontext(&newThread->context);
@@ -35,10 +37,14 @@ int ccreate (void* (*start)(void*), void *arg, int prio) {
     newThread->context.uc_stack.ss_sp = (char *) malloc(STACK_SIZE);
     newThread->context.uc_stack.ss_size = STACK_SIZE;
     makecontext(&newThread->context, (void(*)(void))start, 1, arg);
+	
+	if(insere_na_fila_de_aptos(newThread)==CODIGO_ERRO){
+		return ERRO_FILAS;
+	}
 
     //Refresh number of threads created
 	numberOfCreatedThreads++;
-	return numberOfCreatedThreads;
+	return newTid;
 }
 
 /*-------------------------------------------------------------------------------------------------
@@ -87,7 +93,7 @@ int csignal(csem_t *sem) {
 }
 
 int cidentify (char *name, int size) {
-    char[] components = "Amaury Teixeira Cassola 287704\nBruno Ramos Toresan 291332\nDavid Mees Knijnik 264489";
-	strncpy(name, components, size);
+    //char[] components = "Amaury Teixeira Cassola 287704\nBruno Ramos Toresan 291332\nDavid Mees Knijnik 264489";
+	//strncpy(name, components, size);
 	return CODIGO_SUCESSO;
 }
