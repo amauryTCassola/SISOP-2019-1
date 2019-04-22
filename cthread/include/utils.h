@@ -6,8 +6,11 @@
 #define CODIGO_SUCESSO 0
 
 #define STACK_SIZE 4096
-#define DEFAULTPRIORITY 1
 #define INITIALTID 1
+
+#define HIGH_PRIORITY 0
+#define MEDIUM_PRIORITY 1
+#define LOW_PRIORITY 2
 
 #define ERRO_INIT -2
 #define ERRO_PARAM -3

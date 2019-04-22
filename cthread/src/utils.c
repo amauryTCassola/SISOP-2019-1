@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "../include/support.h"
 #include "../include/cthread.h"
@@ -13,7 +14,7 @@ Ret: ==0, se conseguiu
 	 !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
 ------------------------------------------------------------------------------------------*/
 int cinit_queues() {
-	
+	//TODO: teste se as 3 criações passaram.
     int queues_creation_status = 0;
 /*
     queues_creation_status += CreateFila2(high_priority_queue);
@@ -132,3 +133,22 @@ TCB_t escalonador() {
 
     return chosen_thread;
 }*/
+
+int InitializeCThreads()
+{
+	int initOk;
+    //Creates main thread, with TID 0
+	TCB_t *mainThread;
+	mainThread = (TCB_t*)malloc(sizeof(TCB_t));
+    mainThread->tid = 0;
+    mainThread->prio = LOW_PRIORITY;
+    mainThread->state = PROCST_EXEC;
+    getcontext(&mainThread->context);
+	
+	numberOfCreatedThreads++;
+	
+	initOk = cinit_queues();
+    thread_in_execution = *mainThread;
+
+    return initOk;
+}

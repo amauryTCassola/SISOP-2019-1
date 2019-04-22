@@ -13,7 +13,7 @@ int ccreate (void* (*start)(void*), void *arg, int prio) {
 	TCB_t *newThread;
 	int newTid;
 
-    if(numberOfCreatedThreads == INITIALTID) 
+    if(numberOfCreatedThreads == 0) 
     {
       int initializedCorrectly = cinit_queues();
       if(initializedCorrectly != 0)
