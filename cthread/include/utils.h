@@ -19,9 +19,6 @@ PFILA2 blocked_queue;
 //Declaração da variável global que representa a thread que está em execução
 TCB_t thread_in_execution;
 
-//Declaração da variável global que representa a thread main
-TCB_t thread_main;
-
 
 //typedef da variável de semáforo
 typedef struct	csem_s {
@@ -47,7 +44,7 @@ new_state_thread_leaving_cpu (novo estado da thread que está perdendo a CPU: PR
 
 Ret: void
 ------------------------------------------------------------------------------------------*/
-void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu);
+void dispatcher(int new_state_thread_leaving_cpu);
 
 /******************************************************************************
 Parâmetros: thread que será inserida na fila de aptos
