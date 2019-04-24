@@ -1,7 +1,6 @@
 
 #ifndef __CUTILS_
 #define __CUTILS_
-#define PRIORITY_MAIN 3
 #define PRIORITY_LOW 2
 #define PRIORITY_AVERAGE 1
 #define PRIORITY_HIGH 0
