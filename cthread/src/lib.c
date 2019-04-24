@@ -19,7 +19,7 @@ Lógica: Atualiza a prioridade da variável global thread_in_execution com o val
 parametro
 ---------------------------------------------------------------------------------------------------*/
 int csetprio(int tid, int prio) {
-		if(prio == 0 || prio == 1 || prio == 2 || prio == PRIORITY_MAIN) {
+		if(prio == 0 || prio == 1 || prio == 2) {
 			thread_in_execution.prio = prio;
 			return CODIGO_SUCESSO;
 		}
