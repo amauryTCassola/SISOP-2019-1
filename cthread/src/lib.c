@@ -75,7 +75,7 @@ int csignal(csem_t *sem) {
 }
 
 int cidentify (char *name, int size) {
-    char[] components = "Amaury Teixeira Cassola 287704\nBruno Ramos Toresan 291332\nDavid Mees Knijnik 264489";
+    	char components[] = "Amaury Teixeira Cassola 287704\nBruno Ramos Toresan 291332\nDavid Mees Knijnik 264489";
 	strncpy(name, components, size);
 	return CODIGO_SUCESSO;
 }
