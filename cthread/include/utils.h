@@ -19,10 +19,6 @@ PFILA2 blocked_queue;
 //Declaração da variável global que representa a thread que está em execução
 TCB_t thread_in_execution;
 
-//Declaração da variável global que representa a thread main
-TCB_t thread_main;
-
-
 //typedef da variável de semáforo
 typedef struct	csem_s {
 	int count;							//quantas instâncias do recurso protegido por este semáforo ainda estão disponíveis

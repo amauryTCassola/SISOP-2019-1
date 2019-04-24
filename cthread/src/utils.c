@@ -139,9 +139,6 @@ TCB_t escalonador() {
                     chosen_thread = *GetAtIteratorFila2(low_priority_queue);
                     DeleteAtIteratorFila2(low_priority_queue);
                 }
-                else{
-                    chosen_thread = thread_main;
-                }
             }
     }
 

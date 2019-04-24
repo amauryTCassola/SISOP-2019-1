@@ -47,6 +47,11 @@ int cjoin(int tid) {
 int csem_init(csem_t *sem, int count) {
 	sem = (csem_t*)malloc(sizeof(csem_t));
 	sem->count = count;
+	
+	sem->low_prio_blocked_list = malloc(sizeof(PFILA2));
+	sem->avg_prio_blocked_list = malloc(sizeof(PFILA2));
+	sem->high_prio_blocked_list = malloc(sizeof(PFILA2));
+	
 	if(	CreateFila2(sem->low_prio_blocked_list) == CODIGO_SUCESSO &&
 		CreateFila2(sem->avg_prio_blocked_list) == CODIGO_SUCESSO &&
 		CreateFila2(sem->high_prio_blocked_list) == CODIGO_SUCESSO	)
