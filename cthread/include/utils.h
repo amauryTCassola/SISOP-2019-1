@@ -16,6 +16,8 @@
 #define ERRO_PARAM -3
 #define ERRO_FILAS -4
 
+#define END_CONTEXT 0
+
 //Declaração das 3 filas de aptos utilizada pelo escalonador: prioridades alta, média e baixa
 PFILA2 high_priority_queue;
 PFILA2 average_priority_queue;
@@ -60,6 +62,10 @@ int insere_na_fila_de_aptos(TCB_t *thread);
 Parâmetros:
 Retorno: Retorna uma variável do tipo TCB_t que é a thread que o escalonador selecionou
 *************************************************************************************************/
-int escalonador();
+TCB_t escalonador();
+
+int InitializeCThreads();
+
+void* endExecScheduler();
 
 #endif

@@ -11,11 +11,12 @@
 int ccreate (void* (*start)(void*), void *arg, int prio) {
 	
 	TCB_t *newThread;
+	ucontext_t *endExecContext = (ucontext_t *) malloc(sizeof(ucontext_t));
 	int newTid;
 
     if(numberOfCreatedThreads == 0) 
     {
-      int initializedCorrectly = cinit_queues();
+      int initializedCorrectly = InitializeCThreads();
       if(initializedCorrectly != 0)
       {
           return ERRO_INIT;
@@ -25,6 +26,13 @@ int ccreate (void* (*start)(void*), void *arg, int prio) {
 		return ERRO_PARAM;
 	}
 	newTid = numberOfCreatedThreads;
+	
+	//Initializes the end context of the thread
+	endExecContext->uc_stack.ss_sp = (char*) malloc(STACK_SIZE * sizeof(char));
+	endExecContext->uc_stack.ss_size = STACK_SIZE;
+	endExecContext->uc_link = NULL;
+	makecontext(endExecContext, (void (*) (void)) endExecScheduler, 0);
+
     //Initializes the new thread's TCB
     newThread = (TCB_t*)malloc(sizeof(TCB_t));
     newThread->prio = prio;
@@ -33,7 +41,7 @@ int ccreate (void* (*start)(void*), void *arg, int prio) {
     
     //Initializes the new thread's context
     getcontext(&newThread->context);
-    //newThread->context.uc_link = &endExecSchedulerContext;
+    newThread->context.uc_link = endExecContext;
     newThread->context.uc_stack.ss_sp = (char *) malloc(STACK_SIZE);
     newThread->context.uc_stack.ss_size = STACK_SIZE;
     makecontext(&newThread->context, (void(*)(void))start, 1, arg);

@@ -100,13 +100,13 @@ int insere_na_fila_de_aptos(TCB_t *thread){
 Parâmetros:
 Retorno: Retorna uma variável do tipo TCB_t que é a thread que o escalonador selecionou
 *************************************************************************************************/
-/*
+
 TCB_t escalonador() {
 
     int status;
 
-    TCB_t chosen_thread = (TCB_t*)malloc(sizeof(TCB_t)); // variável que representa a thread que será selecionada pelo escalonador
-
+    TCB_t chosen_thread; // variável que representa a thread que será selecionada pelo escalonador
+	/*
     status = FirstFila2(high_priority_queue);
     if(status == 0){
         chosen_thread = *GetAtIteratorFila2(high_priority_queue);
@@ -130,9 +130,9 @@ TCB_t escalonador() {
             }
 
     }
-
+	*/
     return chosen_thread;
-}*/
+}
 
 int InitializeCThreads()
 {
@@ -151,4 +151,14 @@ int InitializeCThreads()
     thread_in_execution = *mainThread;
 
     return initOk;
+}
+
+void* endExecScheduler(void *arg) {
+	TCB_t threadToExecute;
+	//free(thread_in_execution);
+	threadToExecute = escalonador();
+	threadToExecute.state = PROCST_EXEC;
+	thread_in_execution= threadToExecute;
+	setcontext(&threadToExecute.context);
+	return END_CONTEXT;
 }

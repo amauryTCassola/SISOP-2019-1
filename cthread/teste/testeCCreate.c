@@ -14,7 +14,7 @@ void* fatorial(void *i) {
          fat = n * fat;
 
      printf("Fatorial de %d:\n", fat);
-     return;
+     return 0;
 }
 
 int main(int argc, char **argv) {
@@ -24,4 +24,5 @@ int main(int argc, char **argv) {
 	id0 = ccreate(fatorial, (void *)&i, 0);
 
     printf("Thread %d\n",id0);
+	return 0;
 }
