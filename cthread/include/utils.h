@@ -18,13 +18,11 @@ PFILA2 blocked_queue;
 //Declaração da variável global que representa a thread que está em execução
 TCB_t thread_in_execution;
 
-//typedef da variável de semáforo
-typedef struct	csem_s {
-	int count;							//quantas instâncias do recurso protegido por este semáforo ainda estão disponíveis
-	PFILA2 low_prio_blocked_list;			//lista de tids das threads de baixa proridade bloqueadas esperando pela liberação deste semáforo
-	PFILA2 avg_prio_blocked_list;			//lista de tids das threads de média proridade bloqueadas esperando pela liberação deste semáforo
-	PFILA2 high_prio_blocked_list;			//lista de tids das threads de alta proridade bloqueadas esperando pela liberação deste semáforo
-} csem_t;
+//struct utilizada na fila de bloqueados do semáforo
+typedef struct item_fila_bloqueados_sem{
+	int tid;
+	int prio;
+} t_item_fila_bloqueados_sem;
 
 /*-----------------------------------------------------------------------------------------
 Função:	Inicializa as filas de aptos
