@@ -95,7 +95,7 @@ TCB_t escalonador() {
     status = FirstFila2(high_priority_queue);
     if(status == CODIGO_SUCESSO){
         chosen_thread = GetAtIteratorFila2(high_priority_queue);
-		DeleteAtIteratorFila2(high_priority_queue);
+	DeleteAtIteratorFila2(high_priority_queue);
     }
     else{
             status = FirstFila2(average_priority_queue);
