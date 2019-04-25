@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "../include/support.h"
 #include "../include/cthread.h"
@@ -174,12 +175,12 @@ int desbloqueia(int _tid){
 	FirstFila2(blocked_queue);
 	
 	while(retorno_next_fila == CODIGO_SUCESSO){
-		if(GetAtIteratorFila2(blocked_queue)->tid == _tid) break;
+		if(((TCB_t*)GetAtIteratorFila2(blocked_queue))->tid == _tid) break;
 		retorno_next_fila = NextFila2(blocked_queue);
 	}
 	
 	if(retorno_next_fila == CODIGO_SUCESSO){
-		*thread_a_ser_desbloqueada = *GetAtIteratorFila2(blocked_queue);
+		*thread_a_ser_desbloqueada = *((TCB_t*)GetAtIteratorFila2(blocked_queue));
 		DeleteAtIteratorFila2(blocked_queue);
 		return insere_na_fila_de_aptos(thread_a_ser_desbloqueada);
 	}
@@ -195,10 +196,9 @@ Retorno:
 ******************************************************************************/
 int semaforo_insere_na_fila_de_bloqueados(csem_t *_sem, int _tid, int _prio){
 	t_item_fila_bloqueados_sem* item_fila = (t_item_fila_bloqueados_sem*)malloc(sizeof(t_item_fila_bloqueados_sem));
-	PFILA2 fila_destino;
 	
 	item_fila->tid = _tid;
-	item_fila->prio = prio;
+	item_fila->prio = _prio;
 	
 	if(AppendFila2(_sem->fila, item_fila) == CODIGO_SUCESSO) return CODIGO_SUCESSO;
 	else return CODIGO_ERRO;
@@ -216,19 +216,19 @@ int semaforo_retira_um_da_fila_de_bloqueados(csem_t *_sem){
 	t_item_fila_bloqueados_sem item;
 	
 	if(FirstFila2(fila_origem) == CODIGO_SUCESSO){
-		item.prio = (t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem)->prio;//prioridade do primeiro item da fila
-		item.tid = (t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem)->tid;//tid do primeiro item da fila
+		item.prio = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio;//prioridade do primeiro item da fila
+		item.tid = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->tid;//tid do primeiro item da fila
 		
 		while(NextFila2(fila_origem) != NXTFILA_ENDQUEUE){										//o primeiro loop encontra a maior prioridade presente na fila
-			if((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem)->prio < item.prio){
-				item.prio = (t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem)->prio;
+			if(((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio < item.prio){
+				item.prio = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio;
 			}
 		}
 		
 		FirstFila2(fila_origem);
 		while(NextFila2(fila_origem) != NXTFILA_ENDQUEUE){										//o segundo loop seleciona o primeiro tid que tenha a maior prioridade presente
-			if((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem)->prio == item.prio){//(ou seja, garante que o iterator da fila está apontando para ele)
-				item.tid = (t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem)->tid;
+			if(((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio == item.prio){//(ou seja, garante que o iterator da fila está apontando para ele)
+				item.tid = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->tid;
 				break;
 			}
 		}
