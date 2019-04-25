@@ -90,19 +90,12 @@ Retorno: Retorna uma variável do tipo TCB_t que é a thread que o escalonador s
 TCB_t escalonador() {
 
     int status;
-    TCB_t chosen_thread; // variável que representa a thread que será selecionada pelo escalonador
-	//chosen_thread é uma variável do tipo TCB_t (não precisamos alocar espaço pra ela, 
-	//do mesmo jeito que não precisamos alocar espaço para uma variável int, por exemplo)
+    TCB_t *chosen_thread; 
 	
     status = FirstFila2(high_priority_queue);
     if(status == CODIGO_SUCESSO){
         chosen_thread = *GetAtIteratorFila2(high_priority_queue);
-		//chosen_thread recebe o valor que está apontado pelo ponteiro retornado pela função GetAtIteratorFila2(), 
-		//ou seja, se GetAtIteratorFila2() retorna o ponteiro p1, chosen_thread = *p1;
-        
 		DeleteAtIteratorFila2(high_priority_queue);
-		//aqui ele vai liberar o espaço ocupado pelo item apontado pelo iterator da fila high_priority_queue
-		//ou seja, se o iterator aponta para um ponteiro p1, essa função vai chamar free(p1)
     }
     else{
             status = FirstFila2(average_priority_queue);
@@ -119,7 +112,7 @@ TCB_t escalonador() {
             }
     }
 
-    return chosen_thread;
+    return *chosen_thread;
 }
 
 /******************************************************************************
