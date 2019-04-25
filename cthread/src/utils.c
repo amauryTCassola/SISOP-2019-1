@@ -92,25 +92,25 @@ TCB_t escalonador() {
 
     int status;
     TCB_t chosen_thread;
-    void *conteudo_chosen_thread;
+    TCB_t *conteudo_chosen_thread;
 	
     status = FirstFila2(high_priority_queue);
     if(status == CODIGO_SUCESSO){
-        conteudo_chosen_thread = GetAtIteratorFila2(high_priority_queue);
+        conteudo_chosen_thread = (TCB_t*)GetAtIteratorFila2(high_priority_queue);
         chosen_thread = *conteudo_chosen_thread;
 	DeleteAtIteratorFila2(high_priority_queue);
     }
     else{
             status = FirstFila2(average_priority_queue);
             if(status == CODIGO_SUCESSO){
-                conteudo_chosen_thread = GetAtIteratorFila2(average_priority_queue);
+                conteudo_chosen_thread = (TCB_t*)GetAtIteratorFila2(average_priority_queue);
                 chosen_thread = *conteudo_chosen_thread;
                 DeleteAtIteratorFila2(average_priority_queue);
             }
             else{
                 status = FirstFila2(low_priority_queue);
                 if(status == CODIGO_SUCESSO){
-                    conteudo_chosen_thread = GetAtIteratorFila2(low_priority_queue);
+                    conteudo_chosen_thread = (TCB_t*)GetAtIteratorFila2(low_priority_queue);
                     chosen_thread = *conteudo_chosen_thread;
                     DeleteAtIteratorFila2(low_priority_queue);
                 }
