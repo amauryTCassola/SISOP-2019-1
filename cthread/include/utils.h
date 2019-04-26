@@ -12,16 +12,32 @@
 #define MEDIUM_PRIORITY 1
 #define LOW_PRIORITY 2
 
+#define ERRO -1
 #define ERRO_INIT -2
 #define ERRO_PARAM -3
 #define ERRO_FILAS -4
 
+#define ERRO_NAO_EXISTE -3
+#define ERRO_JA_RELEASER -4
+#define SUCEDIDO 1
+#define FALHOU 0
+
 #define END_CONTEXT 0
+
+typedef struct s_BLOCK_RELEASER{
+  int tidBlock;
+  int tidReleaser;
+} BLOCK_RELEASER;
 
 //Declaração das 3 filas de aptos utilizada pelo escalonador: prioridades alta, média e baixa
 PFILA2 high_priority_queue;
 PFILA2 average_priority_queue;
 PFILA2 low_priority_queue;
+
+//declaração da "fila" de bloqueados (na verdade nós não tratamos ela com FIFO)
+PFILA2 blocked_queue;
+
+PFILA2 releaserTids;
 
 extern int numberOfCreatedThreads;
 
@@ -67,5 +83,17 @@ TCB_t escalonador();
 int InitializeCThreads();
 
 void* endExecScheduler();
+
+void* cjoin_release(void *block_releaser_in);
+
+int threadExists(int tid);
+
+int isThreadReleaser(int tid);
+	
+void setThreadAsReleaser(int releaserTid);
+
+void removeThreadAsReleaser(int releaserTid);
+
+TCB_t* getThread(int tid);
 
 #endif

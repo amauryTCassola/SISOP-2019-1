@@ -11,6 +11,7 @@
 int ccreate (void* (*start)(void*), void *arg, int prio) {
 	
 	TCB_t *newThread;
+
 	ucontext_t *endExecContext = (ucontext_t *) malloc(sizeof(ucontext_t));
 	int newTid;
 
@@ -85,7 +86,42 @@ int cyield(void) {
 }
 
 int cjoin(int tid) {
-	return CODIGO_ERRO;
+	BLOCK_RELEASER *blockReleaser;
+	TCB_t* tcbReleaser;
+	int releaserTid=tid;
+	if(numberOfCreatedThreads == 0) 
+	{
+		int initializedCorrectly = InitializeCThreads();
+		if(initializedCorrectly != 0)
+		{
+			return ERRO_INIT;
+		}
+	}
+	if(threadExists(releaserTid)==FALHOU)
+	{
+		return ERRO_NAO_EXISTE;
+	}
+	if(isThreadReleaser(releaserTid)==SUCEDIDO)
+	{
+		return ERRO_JA_RELEASER;
+	}
+	
+	tcbReleaser= getThread(releaserTid);
+	
+	setThreadAsReleaser(releaserTid);
+	
+	blockReleaser = (BLOCK_RELEASER *) calloc(1, sizeof(BLOCK_RELEASER));
+	if (blockReleaser == NULL) {
+		return ERRO;
+	}
+	blockReleaser->tidBlock = thread_in_execution.tid;
+	blockReleaser->tidReleaser = releaserTid;
+	
+	makecontext(tcbReleaser->context.uc_link, (void (*) (void)) cjoin_release, 1, \
+    (void *)blockReleaser);
+	
+	bloquear();
+	return SUCEDIDO;
 }
 
 int csem_init(csem_t *sem, int count) {
