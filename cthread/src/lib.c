@@ -126,7 +126,8 @@ int cjoin(int tid) {
 	makecontext(tcbReleaser->context.uc_link, (void (*) (void)) cjoin_release, 1, \
     (void *)blockReleaser);
 	
-	bloquear();
+	thread_in_execution.state = PROCST_BLOQ;
+	dispatcher(PROCST_BLOQ);
 	return CODIGO_SUCESSO;
 }
 

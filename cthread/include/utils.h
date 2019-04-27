@@ -118,6 +118,7 @@ Retorno:
 	Quando executada erroneamente: retorna CODIGO_ERRO
 ******************************************************************************/
 int semaforo_retira_um_da_fila_de_bloqueados(csem_t *_sem);
+
 int InitializeCThreads();
 
 void* endExecScheduler();
