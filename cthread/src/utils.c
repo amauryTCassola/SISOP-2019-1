@@ -16,11 +16,11 @@ Ret: ==0, se conseguiu
 int cinit_queues() {
 	//TODO: teste se as 3 criações passaram.
     int queues_creation_status = 0;
-/*
+
     queues_creation_status += CreateFila2(high_priority_queue);
     queues_creation_status += CreateFila2(average_priority_queue); 
     queues_creation_status += CreateFila2(low_priority_queue); 
-*/
+
     return queues_creation_status;
 }
 
@@ -35,7 +35,7 @@ new_state_thread_leaving_cpu (novo estado da thread que está perdendo a CPU: PR
 Ret: void
 ------------------------------------------------------------------------------------------*/
 void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu){
-/*
+
     TCB_t thread_arriving_CPU = (TCB_t*)malloc(sizeof(TCB_t));    
 
     thread_leaving_cpu->state = new_state_thread_leaving_cpu;
@@ -57,7 +57,7 @@ void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu){
     }
 
     thread_in_execution = thread_arriving_CPU; //atualiza a variável global com a thread vinda do escalonador
-    setcontext(&thread_in_execution);*/
+    setcontext(&thread_in_execution);
 }
 
 
@@ -69,7 +69,7 @@ Retorno:
 	Quando executada erroneamente: retorna CODIGO_ERRO
 ******************************************************************************/
 int insere_na_fila_de_aptos(TCB_t *thread){
-/*
+
 	int status = 0;
 
 	thread->state = PROCST_APTO;
@@ -91,7 +91,7 @@ int insere_na_fila_de_aptos(TCB_t *thread){
 	if(status != 0){
         return CODIGO_ERRO;
     } 
-	*/
+	
 	return CODIGO_SUCESSO;
 }
 
@@ -106,7 +106,7 @@ TCB_t escalonador() {
     int status;
 
     TCB_t chosen_thread; // variável que representa a thread que será selecionada pelo escalonador
-	/*
+	
     status = FirstFila2(high_priority_queue);
     if(status == 0){
         chosen_thread = *GetAtIteratorFila2(high_priority_queue);
@@ -130,7 +130,7 @@ TCB_t escalonador() {
             }
 
     }
-	*/
+	
     return chosen_thread;
 }
 
