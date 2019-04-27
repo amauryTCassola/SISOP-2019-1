@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdlib.h>
 #include "../include/support.h"
@@ -9,7 +10,51 @@
 
 
 int ccreate (void* (*start)(void*), void *arg, int prio) {
-	return CODIGO_ERRO;
+	
+	TCB_t *newThread;
+
+	ucontext_t *endExecContext = (ucontext_t *) malloc(sizeof(ucontext_t));
+	int newTid;
+
+    if(numberOfCreatedThreads == 0) 
+    {
+      int initializedCorrectly = InitializeCThreads();
+      if(initializedCorrectly != 0)
+      {
+          return ERRO_INIT;
+      }
+    }
+	if(prio<0 || prio>2){
+		return ERRO_PARAM;
+	}
+	newTid = numberOfCreatedThreads;
+	
+	//Initializes the end context of the thread
+	endExecContext->uc_stack.ss_sp = (char*) malloc(STACK_SIZE * sizeof(char));
+	endExecContext->uc_stack.ss_size = STACK_SIZE;
+	endExecContext->uc_link = NULL;
+	makecontext(endExecContext, (void (*) (void)) endExecScheduler, 0);
+
+    //Initializes the new thread's TCB
+    newThread = (TCB_t*)malloc(sizeof(TCB_t));
+    newThread->prio = prio;
+    newThread->state = PROCST_APTO;
+    newThread->tid = newTid;
+    
+    //Initializes the new thread's context
+    getcontext(&newThread->context);
+    newThread->context.uc_link = endExecContext;
+    newThread->context.uc_stack.ss_sp = (char *) malloc(STACK_SIZE);
+    newThread->context.uc_stack.ss_size = STACK_SIZE;
+    makecontext(&newThread->context, (void(*)(void))start, 1, arg);
+	
+	if(insere_na_fila_de_aptos(newThread)==CODIGO_ERRO){
+		return ERRO_FILAS;
+	}
+
+    //Refresh number of threads created
+	numberOfCreatedThreads++;
+	return newTid;
 }
 
 /*-------------------------------------------------------------------------------------------------
@@ -42,7 +87,48 @@ int cyield(void) {
 }
 
 int cjoin(int tid) {
-	return CODIGO_ERRO;
+	BLOCK_RELEASER *blockReleaser;
+	TCB_t* tcbReleaser;
+	int releaserTid=tid;
+	if(numberOfCreatedThreads == 0) 
+	{
+		int initializedCorrectly = InitializeCThreads();
+		if(initializedCorrectly != 0)
+		{
+			return ERRO_INIT;
+		}
+	}
+	/*
+	if(threadExists(releaserTid)==FALHOU)
+	{
+		return ERRO_NAO_EXISTE;
+	}*/
+	if(isThreadReleaser(releaserTid)==CODIGO_SUCESSO)
+	{
+		return ERRO_JA_RELEASER;
+	}
+	
+	tcbReleaser= getThread(releaserTid);
+	if(tcbReleaser==NULL)
+	{
+		return ERRO_NAO_EXISTE;
+	}
+	
+	setThreadAsReleaser(releaserTid);
+	
+	blockReleaser = (BLOCK_RELEASER *) calloc(1, sizeof(BLOCK_RELEASER));
+	if (blockReleaser == NULL) {
+		return ERRO;
+	}
+	blockReleaser->tidBlock = thread_in_execution.tid;
+	blockReleaser->tidReleaser = releaserTid;
+	
+	makecontext(tcbReleaser->context.uc_link, (void (*) (void)) cjoin_release, 1, \
+    (void *)blockReleaser);
+	
+	thread_in_execution.state = PROCST_BLOQ;
+	dispatcher(PROCST_BLOQ);
+	return CODIGO_SUCESSO;
 }
 
 int csem_init(csem_t *sem, int count) {

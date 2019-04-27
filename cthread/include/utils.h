@@ -7,6 +7,30 @@
 #define CODIGO_ERRO -9
 #define CODIGO_SUCESSO 0
 
+#define STACK_SIZE 4096
+#define INITIALTID 1
+
+#define HIGH_PRIORITY 0
+#define MEDIUM_PRIORITY 1
+#define LOW_PRIORITY 2
+
+#define ERRO -1
+#define ERRO_INIT -2
+#define ERRO_PARAM -3
+#define ERRO_FILAS -4
+
+#define ERRO_NAO_EXISTE -3
+#define ERRO_JA_RELEASER -4
+#define CODIGO_SUCESSO 0
+#define FALHOU -1
+
+#define END_CONTEXT 0
+
+typedef struct s_BLOCK_RELEASER{
+  int tidBlock;
+  int tidReleaser;
+} BLOCK_RELEASER;
+
 //Declaração das 3 filas de aptos utilizada pelo escalonador: prioridades alta, média e baixa
 PFILA2 high_priority_queue;
 PFILA2 average_priority_queue;
@@ -14,6 +38,10 @@ PFILA2 low_priority_queue;
 
 //declaração da "fila" de bloqueados (na verdade nós não tratamos ela com FIFO)
 PFILA2 blocked_queue;
+
+PFILA2 releaserTids;
+
+extern int numberOfCreatedThreads;
 
 //Declaração da variável global que representa a thread que está em execução
 TCB_t thread_in_execution;
@@ -90,4 +118,21 @@ Retorno:
 	Quando executada erroneamente: retorna CODIGO_ERRO
 ******************************************************************************/
 int semaforo_retira_um_da_fila_de_bloqueados(csem_t *_sem);
+
+int InitializeCThreads();
+
+void* endExecScheduler();
+
+void* cjoin_release(void *block_releaser_in);
+
+//int threadExists(int tid);
+
+int isThreadReleaser(int tid);
+	
+void setThreadAsReleaser(int releaserTid);
+
+void removeThreadAsReleaser(int releaserTid);
+
+TCB_t* getThread(int tid);
+
 #endif
