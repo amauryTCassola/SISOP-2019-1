@@ -1,7 +1,9 @@
 
 #ifndef __CUTILS_
 #define __CUTILS_
-#define PRIORITY_MAIN 3
+#define PRIORITY_LOW 2
+#define PRIORITY_AVERAGE 1
+#define PRIORITY_HIGH 0
 #define CODIGO_ERRO -9
 #define CODIGO_SUCESSO 0
 
@@ -44,8 +46,11 @@ extern int numberOfCreatedThreads;
 //Declaração da variável global que representa a thread que está em execução
 TCB_t thread_in_execution;
 
-//Declaração da variável global que representa a thread main
-TCB_t thread_main;
+//struct utilizada na fila de bloqueados do semáforo
+typedef struct item_fila_bloqueados_sem{
+	int tid;
+	int prio;
+} t_item_fila_bloqueados_sem;
 
 /*-----------------------------------------------------------------------------------------
 Função:	Inicializa as filas de aptos
@@ -63,7 +68,7 @@ new_state_thread_leaving_cpu (novo estado da thread que está perdendo a CPU: PR
 
 Ret: void
 ------------------------------------------------------------------------------------------*/
-void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu);
+void dispatcher(int new_state_thread_leaving_cpu);
 
 /******************************************************************************
 Parâmetros: thread que será inserida na fila de aptos
@@ -80,6 +85,39 @@ Retorno: Retorna uma variável do tipo TCB_t que é a thread que o escalonador s
 *************************************************************************************************/
 TCB_t escalonador();
 
+/******************************************************************************
+Parâmetros: thread que será inserida na fila de bloqueados
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int bloqueia(TCB_t *thread);
+
+/******************************************************************************
+Parâmetros: o tid de uma thread que deve ser retirada da fila de bloqueadas e colocada na fila de aptos
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int desbloqueia(int _tid);
+
+
+/******************************************************************************
+Parâmetros: ponteiro para um semáforo, o tid a ser inserido em uma fila de bloqueados deste semáforo e a prioridade da thread representada por este tid
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int semaforo_insere_na_fila_de_bloqueados(csem_t *_sem, int _tid, int _prio);
+
+
+/******************************************************************************
+Parâmetros: ponteiro para um semáforo
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int semaforo_retira_um_da_fila_de_bloqueados(csem_t *_sem);
 int InitializeCThreads();
 
 void* endExecScheduler();

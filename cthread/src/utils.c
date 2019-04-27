@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include "../include/support.h"
 #include "../include/cthread.h"
 #include "../include/cdata.h"
@@ -21,46 +22,36 @@ int cinit_queues() {
     queues_creation_status += CreateFila2(average_priority_queue); 
     queues_creation_status += CreateFila2(low_priority_queue); 
 
+	//TO-DO: criar a thread main, inicializar as vars globais, inicializar a lista de bloqueados
+	
     return queues_creation_status;
 }
 
 
-/*-----------------------------------------------------------------------------------------
-Função:	Implementação do chaveamento de contexto e do despachante (dispatcher)
+void dispatcher(int new_state_thread_leaving_cpu){
 
-Parâmetros: 
-thread_leaving_cpu (ponteiro para a thread que está perdendo a CPU),
-new_state_thread_leaving_cpu (novo estado da thread que está perdendo a CPU: PROCST_APTO, PROCST_BLOQ, PROCST_TERMINO)
+    TCB_t thread_arriving_CPU;
+    TCB_t thread_leaving_cpu = thread_in_execution;
 
-Ret: void
-------------------------------------------------------------------------------------------*/
-void dispatcher(TCB_t *thread_leaving_cpu, int new_state_thread_leaving_cpu){
+    thread_arriving_CPU = escalonador(); 
+    thread_arriving_CPU.state = PROCST_EXEC; 
+	
+    thread_leaving_cpu.state = new_state_thread_leaving_cpu; 
 
-    TCB_t thread_arriving_CPU = (TCB_t*)malloc(sizeof(TCB_t));    
-
-    thread_leaving_cpu->state = new_state_thread_leaving_cpu;
-
-    // escolhe a thread que vai chegar na CPU antes de tirar a thread que está executando na CPU
-    // para evitar postergação indefinida
-    thread_arriving_CPU = escalonador();
-    thread_arriving_CPU.state = PROCST_EXEC;
-
+    thread_in_execution = thread_arriving_CPU; 
+	
     if(new_state_thread_leaving_cpu == PROCST_APTO){
-        getcontext(thread_leaving_cpu->context);
-        insere_na_fila_de_aptos(thread_leaving_cpu);
+           insere_na_fila_de_aptos(&thread_leaving_cpu);
+	   swapcontext(&(thread_leaving_cpu.context), &(thread_arriving_CPU.context));
     }
     else if(new_state_thread_leaving_cpu == PROCST_TERMINO){
-        thread_leaving_cpu = NULL;
+	   setcontext(&(thread_arriving_CPU.context));
     }
     else if(new_state_thread_leaving_cpu == PROCST_BLOQ){
-        // FUNÇÃO QUE O AMAURY VAI FAZER QUE PÕE UMA THREAD NO ESTADO BLOQUEADO
+	    bloqueia(&thread_leaving_cpu);
+	    swapcontext(&(thread_leaving_cpu.context), &(thread_arriving_CPU.context));
     }
-
-    thread_in_execution = thread_arriving_CPU; //atualiza a variável global com a thread vinda do escalonador
-    setcontext(&thread_in_execution);
 }
-
-
 
 /******************************************************************************
 Parâmetros: thread que será inserida na fila de aptos
@@ -71,68 +62,162 @@ Retorno:
 int insere_na_fila_de_aptos(TCB_t *thread){
 
 	int status = 0;
-
+	PFILA2 fila_aptos_destino;
+	
 	thread->state = PROCST_APTO;
 	
 	switch(thread->prio){
-		case 0:
-			status += AppenFila2(high_priority_queue, thread);
+		case PRIORITY_HIGH:
+			fila_aptos_destino = high_priority_queue;
 		    break;
-		case 1:
-			status += AppenFila2(average_priority_queue, thread);
+		case PRIORITY_AVERAGE:
+			fila_aptos_destino = average_priority_queue;
 		    break;
-		case 2:
-			status += AppenFila2(low_priority_queue, thread);
+		case PRIORITY_LOW:
+			fila_aptos_destino = low_priority_queue;
 		    break;
 		default:
-			status = CODIGO_ERRO;
+			return CODIGO_ERRO;
 	}
 	
-	if(status != 0){
-        return CODIGO_ERRO;
-    } 
-	
-	return CODIGO_SUCESSO;
+	status = AppendFila2(fila_aptos_destino, thread);
+	if(status == CODIGO_SUCESSO) return CODIGO_SUCESSO;
+	else return CODIGO_ERRO;
 }
 
 
 /***********************************************************************************************
 Parâmetros:
-Retorno: Retorna uma variável do tipo TCB_t que é a thread que o escalonador selecionou
+Retorno: Retorna uma variável do tipo TCB_t que é a thread que o escalonador selecionou para executar em seguida
 *************************************************************************************************/
 
 TCB_t escalonador() {
 
     int status;
-
-    TCB_t chosen_thread; // variável que representa a thread que será selecionada pelo escalonador
+    TCB_t chosen_thread;
+    TCB_t *conteudo_chosen_thread;
 	
     status = FirstFila2(high_priority_queue);
-    if(status == 0){
-        chosen_thread = *GetAtIteratorFila2(high_priority_queue);
-        DeleteAtIteratorFila2(high_priority_queue);
+    if(status == CODIGO_SUCESSO){
+        conteudo_chosen_thread = (TCB_t*)GetAtIteratorFila2(high_priority_queue);
+        chosen_thread = *conteudo_chosen_thread;
+	DeleteAtIteratorFila2(high_priority_queue);
     }
     else{
             status = FirstFila2(average_priority_queue);
-            if(status == 0){
-                chosen_thread = *GetAtIteratorFila2(average_priority_queue);
+            if(status == CODIGO_SUCESSO){
+                conteudo_chosen_thread = (TCB_t*)GetAtIteratorFila2(average_priority_queue);
+                chosen_thread = *conteudo_chosen_thread;
                 DeleteAtIteratorFila2(average_priority_queue);
             }
             else{
                 status = FirstFila2(low_priority_queue);
-                if(status == 0){
-                    chosen_thread = *GetAtIteratorFila2(low_priority_queue);
+                if(status == CODIGO_SUCESSO){
+                    conteudo_chosen_thread = (TCB_t*)GetAtIteratorFila2(low_priority_queue);
+                    chosen_thread = *conteudo_chosen_thread;
                     DeleteAtIteratorFila2(low_priority_queue);
                 }
-                else{
-                    chosen_thread = thread_main;
-                }
             }
-
     }
 	
     return chosen_thread;
 }
+
+/******************************************************************************
+Parâmetros: thread que será inserida na fila de bloqueados
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int bloqueia(TCB_t *thread){
+	
+	int status = 0;
+	
+	status = AppendFila2(blocked_queue, thread);
+	
+	if(status == CODIGO_SUCESSO) return CODIGO_SUCESSO;
+	else return CODIGO_ERRO;
+}
+
+/******************************************************************************
+Parâmetros: um tid
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int desbloqueia(int _tid){
+	TCB_t* thread_a_ser_desbloqueada = (TCB_t*)malloc(sizeof(TCB_t));
+	int retorno_next_fila = CODIGO_SUCESSO;
+	
+	FirstFila2(blocked_queue);
+	
+	while(retorno_next_fila == CODIGO_SUCESSO){
+		if(((TCB_t*)GetAtIteratorFila2(blocked_queue))->tid == _tid) break;
+		retorno_next_fila = NextFila2(blocked_queue);
+	}
+	
+	if(retorno_next_fila == CODIGO_SUCESSO){
+		*thread_a_ser_desbloqueada = *((TCB_t*)GetAtIteratorFila2(blocked_queue));
+		DeleteAtIteratorFila2(blocked_queue);
+		return insere_na_fila_de_aptos(thread_a_ser_desbloqueada);
+	}
+	else return CODIGO_ERRO;
+	
+}
+
+/******************************************************************************
+Parâmetros: ponteiro para um semáforo, o tid a ser inserido em uma fila de bloqueados deste semáforo e a prioridade da thread representada por este tid
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int semaforo_insere_na_fila_de_bloqueados(csem_t *_sem, int _tid, int _prio){
+	t_item_fila_bloqueados_sem* item_fila = (t_item_fila_bloqueados_sem*)malloc(sizeof(t_item_fila_bloqueados_sem));
+	
+	item_fila->tid = _tid;
+	item_fila->prio = _prio;
+	
+	if(AppendFila2(_sem->fila, item_fila) == CODIGO_SUCESSO) return CODIGO_SUCESSO;
+	else return CODIGO_ERRO;
+}
+
+/******************************************************************************
+Parâmetros: ponteiro para um semáforo
+Retorno:
+	Quando executada corretamente: retorna CODIGO_SUCESSO
+	Quando executada erroneamente: retorna CODIGO_ERRO
+******************************************************************************/
+int semaforo_retira_um_da_fila_de_bloqueados(csem_t *_sem){
+	
+	PFILA2 fila_origem = _sem->fila;
+	t_item_fila_bloqueados_sem item;
+	
+	if(FirstFila2(fila_origem) == CODIGO_SUCESSO){
+		item.prio = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio;//prioridade do primeiro item da fila
+		item.tid = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->tid;//tid do primeiro item da fila
+		
+		while(NextFila2(fila_origem) != NXTFILA_ENDQUEUE){										//o primeiro loop encontra a maior prioridade presente na fila
+			if(((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio < item.prio){
+				item.prio = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio;
+			}
+		}
+		
+		FirstFila2(fila_origem);
+		while(NextFila2(fila_origem) != NXTFILA_ENDQUEUE){										//o segundo loop seleciona o primeiro tid que tenha a maior prioridade presente
+			if(((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio == item.prio){//(ou seja, garante que o iterator da fila está apontando para ele)
+				item.tid = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->tid;
+				break;
+			}
+		}
+	}
+	else return CODIGO_SUCESSO;//para o caso em que a fila está vazia
+	
+	DeleteAtIteratorFila2(fila_origem);
+	
+	return desbloqueia(item.tid);
+}
+
+
 
 int InitializeCThreads()
 {

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include "../include/support.h"
 #include "../include/cthread.h"
 #include "../include/cdata.h"
@@ -64,7 +65,7 @@ Lógica: Atualiza a prioridade da variável global thread_in_execution com o val
 parametro
 ---------------------------------------------------------------------------------------------------*/
 int csetprio(int tid, int prio) {
-		if(prio == 0 || prio == 1 || prio == 2 || prio == PRIORITY_MAIN) {
+		if(prio == 0 || prio == 1 || prio == 2) {
 			thread_in_execution.prio = prio;
 			return CODIGO_SUCESSO;
 		}
@@ -81,7 +82,7 @@ Ret:	CODIGO_SUCESSO, se conseguiu
 	    CODIGO_ERRO, caso contrário 
 ---------------------------------------------------------------------------------------------------*/
 int cyield(void) {
-	dispatcher(&thread_in_execution, PROCST_APTO);
+	dispatcher(PROCST_APTO);
 	return CODIGO_SUCESSO;
 }
 
@@ -130,19 +131,30 @@ int cjoin(int tid) {
 }
 
 int csem_init(csem_t *sem, int count) {
-	return CODIGO_ERRO;
+	sem = (csem_t*)malloc(sizeof(csem_t));
+	sem->count = count;
+	if(	CreateFila2(sem->fila) == CODIGO_SUCESSO)
+		return CODIGO_SUCESSO;
+	else
+		return CODIGO_ERRO;
 }
 
 int cwait(csem_t *sem) {
-	return CODIGO_ERRO;
+	if(sem->count <= 0){
+		semaforo_insere_na_fila_de_bloqueados(sem, thread_in_execution.tid, thread_in_execution.prio);
+		dispatcher(PROCST_BLOQ);
+	}
+	sem->count--;
+	return CODIGO_SUCESSO;
 }
 
 int csignal(csem_t *sem) {
-	return CODIGO_ERRO;
+	sem->count++;
+	return semaforo_retira_um_da_fila_de_bloqueados(sem);
 }
 
 int cidentify (char *name, int size) {
-    char components[] = "Amaury Teixeira Cassola 287704\nBruno Ramos Toresan 291332\nDavid Mees Knijnik 264489";
+    	char components[] = "Amaury Teixeira Cassola 287704\nBruno Ramos Toresan 291332\nDavid Mees Knijnik 264489";
 	strncpy(name, components, size);
 	return CODIGO_SUCESSO;
 }
