@@ -180,7 +180,7 @@ void* cjoin_release(void *block_releaser_in) {
 	}
 
 	if(tcb_block->state == PROCST_BLOQ){
-		if (desbloquear(tidReleaser) != SUCEDIDO) {
+		if (desbloquear(tidReleaser) != CODIGO_SUCESSO) {
 		return END_CONTEXT;
 		}
 	} else {
@@ -205,21 +205,21 @@ void* cjoin_release(void *block_releaser_in) {
 
 	return END_CONTEXT;
 }
-
+/*
 bool threadExists(int tid)
 {
-	if(isThreadInQueue(PFILA2 high_priority_queue)==SUCEDIDO)
+	if(isThreadInQueue(PFILA2 high_priority_queue)==CODIGO_SUCESSO)
 	{
-		return SUCEDIDO;
-	} else if(isThreadInQueue(PFILA2 high_priority_queue)==SUCEDIDO)
+		return CODIGO_SUCESSO;
+	} else if(isThreadInQueue(PFILA2 high_priority_queue)==CODIGO_SUCESSO)
 	{
-		return SUCEDIDO;
-	}else if(isThreadInQueue(PFILA2 high_priority_queue)==SUCEDIDO)
+		return CODIGO_SUCESSO;
+	}else if(isThreadInQueue(PFILA2 high_priority_queue)==CODIGO_SUCESSO)
 	{
-		return SUCEDIDO;
+		return CODIGO_SUCESSO;
 	} else return FALHOU;
 	//INCOMPLETO
-}
+}*/
 
 int isThreadInQueue(PFILA2 pFila, int tid)
 {
@@ -230,7 +230,7 @@ int isThreadInQueue(PFILA2 pFila, int tid)
 		return FALHOU;
 	}
 
-	if (FirstFila2(pFila) != SUCEDIDO)
+	if (FirstFila2(pFila) != CODIGO_SUCESSO)
 	{
 		return FALHOU;
 	}
@@ -244,10 +244,10 @@ int isThreadInQueue(PFILA2 pFila, int tid)
 		}	
 		if (tcb_temp->tid == tid)
 		{
-			return SUCEDIDO;
+			return CODIGO_SUCESSO;
 		}
 	
-	}while(NextFila2(pFila) == SUCEDIDO);
+	}while(NextFila2(pFila) == CODIGO_SUCESSO);
 	
 	return FALHOU;
 }
@@ -260,24 +260,20 @@ int isThreadReleaser(int tid)
 		return FALHOU;
 	}
 
-	if (FirstFila2(releaserTids) != SUCEDIDO)
+	if (FirstFila2(releaserTids) != CODIGO_SUCESSO)
 	{
 		return FALHOU;
 	}
 
 	do{
-		tempTid = (int) GetAtIteratorFila2(releaserTids);//releaserTids pode ser de ponteiros?
+		tempTid = (int) GetAtIteratorFila2(releaserTids);//releaserTids pode ser de ints?
 
-		if (tempTid == NULL)
-		{
-			return FALHOU;
-		}	
 		if (tempTid == tid)
 		{
-			return SUCEDIDO;
+			return CODIGO_SUCESSO;
 		}
 	
-	}while(NextFila2(releaserTids) == SUCEDIDO);
+	}while(NextFila2(releaserTids) == CODIGO_SUCESSO);
 	
 	return FALHOU;
 }
@@ -295,7 +291,7 @@ void removeThreadAsReleaser(int releaserTid)
 		return;
 	}
 
-	if (FirstFila2(releaserTids) != SUCEDIDO)
+	if (FirstFila2(releaserTids) != CODIGO_SUCESSO)
 	{
 		return;
 	}
@@ -309,7 +305,7 @@ void removeThreadAsReleaser(int releaserTid)
 			return;
 		}
 	
-	}while(NextFila2(releaserTids) == SUCEDIDO);
+	}while(NextFila2(releaserTids) == CODIGO_SUCESSO);
 	
 	return;
 }
@@ -323,7 +319,7 @@ TCB_t* getTCBFromQueue(PFILA2 pFila,int tid)
 		return NULL;
 	}
 
-	if (FirstFila2(pFila) != SUCEDIDO)
+	if (FirstFila2(pFila) != CODIGO_SUCESSO)
 	{
 		return NULL;
 	}
@@ -340,7 +336,7 @@ TCB_t* getTCBFromQueue(PFILA2 pFila,int tid)
 			return tcb_temp;
 		}
 	
-	}while(NextFila2(pFila) == SUCEDIDO);
+	}while(NextFila2(pFila) == CODIGO_SUCESSO);
 	
 	return NULL;
 }

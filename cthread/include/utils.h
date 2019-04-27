@@ -19,8 +19,8 @@
 
 #define ERRO_NAO_EXISTE -3
 #define ERRO_JA_RELEASER -4
-#define SUCEDIDO 1
-#define FALHOU 0
+#define CODIGO_SUCESSO 0
+#define FALHOU -1
 
 #define END_CONTEXT 0
 
@@ -86,7 +86,7 @@ void* endExecScheduler();
 
 void* cjoin_release(void *block_releaser_in);
 
-int threadExists(int tid);
+//int threadExists(int tid);
 
 int isThreadReleaser(int tid);
 	

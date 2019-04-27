@@ -97,16 +97,21 @@ int cjoin(int tid) {
 			return ERRO_INIT;
 		}
 	}
+	/*
 	if(threadExists(releaserTid)==FALHOU)
 	{
 		return ERRO_NAO_EXISTE;
-	}
-	if(isThreadReleaser(releaserTid)==SUCEDIDO)
+	}*/
+	if(isThreadReleaser(releaserTid)==CODIGO_SUCESSO)
 	{
 		return ERRO_JA_RELEASER;
 	}
 	
 	tcbReleaser= getThread(releaserTid);
+	if(tcbReleaser==NULL)
+	{
+		return ERRO_NAO_EXISTE;
+	}
 	
 	setThreadAsReleaser(releaserTid);
 	
@@ -121,7 +126,7 @@ int cjoin(int tid) {
     (void *)blockReleaser);
 	
 	bloquear();
-	return SUCEDIDO;
+	return CODIGO_SUCESSO;
 }
 
 int csem_init(csem_t *sem, int count) {

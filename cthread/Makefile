@@ -31,7 +31,7 @@ testeObj: #teste para o negocio
 	$(CC) -c src/lib.c src/utils.c teste/testeCCreate.c -Wall
 	
 testeExe: #teste para o negocio
-	$(CC) lib.o utils.o testeCCreate.o -o testes
+	$(CC) lib.o utils.o testeCCreate.o bin/support.o -o testes
 
 clean:
 	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*~ *~
