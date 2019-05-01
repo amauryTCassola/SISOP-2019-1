@@ -15,15 +15,20 @@ Ret: ==0, se conseguiu
 	 !=0, caso contrário (erro ou fila vazia na inicialização de alguma das filas de apto)
 ------------------------------------------------------------------------------------------*/
 int cinit_queues() {
-	//TODO: teste se as 3 criações passaram.
     int queues_creation_status = 0;
+
+	high_priority_queue = (PFILA2)malloc(sizeof(FILA2));
+	average_priority_queue = (PFILA2)malloc(sizeof(FILA2));
+	low_priority_queue = (PFILA2)malloc(sizeof(FILA2));
+	blocked_queue = (PFILA2)malloc(sizeof(FILA2));
+	releaserTids = (PFILA2)malloc(sizeof(FILA2));
 
     queues_creation_status += CreateFila2(high_priority_queue);
     queues_creation_status += CreateFila2(average_priority_queue); 
     queues_creation_status += CreateFila2(low_priority_queue); 
+	queues_creation_status += CreateFila2(blocked_queue); 
+	queues_creation_status += CreateFila2(releaserTids); 
 
-	//TO-DO: criar a thread main, inicializar as vars globais, inicializar a lista de bloqueados
-	
     return queues_creation_status;
 }
 
@@ -223,22 +228,22 @@ int InitializeCThreads()
 {
 	int initOk;
     //Creates main thread, with TID 0
-	TCB_t *mainThread;
-	mainThread = (TCB_t*)malloc(sizeof(TCB_t));
-    mainThread->tid = 0;
-    mainThread->prio = LOW_PRIORITY;
-    mainThread->state = PROCST_EXEC;
-    getcontext(&mainThread->context);
+	TCB_t mainThread;
+	mainThread.tid = 0;
+    mainThread.prio = LOW_PRIORITY;
+    mainThread.state = PROCST_EXEC;
 	
 	numberOfCreatedThreads++;
-	
+	thread_in_execution = mainThread;
 	initOk = cinit_queues();
-    thread_in_execution = *mainThread;
+	getcontext(&(mainThread.context));
 
     return initOk;
 }
 
 void* endExecScheduler(void *arg) {
+	printf("endExecScheduler");
+	exit(0);
 	TCB_t threadToExecute;
 	//free(thread_in_execution);
 	threadToExecute = escalonador();

@@ -24,17 +24,20 @@ int ccreate (void* (*start)(void*), void *arg, int prio) {
           return ERRO_INIT;
       }
     }
+	
 	if(prio<0 || prio>2){
 		return ERRO_PARAM;
 	}
 	newTid = numberOfCreatedThreads;
 	
 	//Initializes the end context of the thread
+	getcontext(endExecContext);
+	printf("\nget context endExecContext");
 	endExecContext->uc_stack.ss_sp = (char*) malloc(STACK_SIZE * sizeof(char));
 	endExecContext->uc_stack.ss_size = STACK_SIZE;
 	endExecContext->uc_link = NULL;
 	makecontext(endExecContext, (void (*) (void)) endExecScheduler, 0);
-
+	printf("\nmake context endExecContext\n");
     //Initializes the new thread's TCB
     newThread = (TCB_t*)malloc(sizeof(TCB_t));
     newThread->prio = prio;
@@ -54,6 +57,7 @@ int ccreate (void* (*start)(void*), void *arg, int prio) {
 
     //Refresh number of threads created
 	numberOfCreatedThreads++;
+	
 	return newTid;
 }
 
@@ -82,6 +86,15 @@ Ret:	CODIGO_SUCESSO, se conseguiu
 	    CODIGO_ERRO, caso contrário 
 ---------------------------------------------------------------------------------------------------*/
 int cyield(void) {
+if(numberOfCreatedThreads == 0) 
+	{
+		int initializedCorrectly = InitializeCThreads();
+		if(initializedCorrectly != 0)
+		{
+			return ERRO_INIT;
+		}
+	}
+
 	dispatcher(PROCST_APTO);
 	return CODIGO_SUCESSO;
 }
@@ -132,8 +145,19 @@ int cjoin(int tid) {
 }
 
 int csem_init(csem_t *sem, int count) {
+
+	if(numberOfCreatedThreads == 0) 
+	{
+		int initializedCorrectly = InitializeCThreads();
+		if(initializedCorrectly != 0)
+		{
+			return ERRO_INIT;
+		}
+	}
+
 	sem = (csem_t*)malloc(sizeof(csem_t));
 	sem->count = count;
+	sem->fila = (PFILA2)malloc(sizeof(FILA2));
 	if(	CreateFila2(sem->fila) == CODIGO_SUCESSO)
 		return CODIGO_SUCESSO;
 	else
@@ -141,6 +165,16 @@ int csem_init(csem_t *sem, int count) {
 }
 
 int cwait(csem_t *sem) {
+
+	if(numberOfCreatedThreads == 0) 
+	{
+		int initializedCorrectly = InitializeCThreads();
+		if(initializedCorrectly != 0)
+		{
+			return ERRO_INIT;
+		}
+	}
+
 	if(sem->count <= 0){
 		semaforo_insere_na_fila_de_bloqueados(sem, thread_in_execution.tid, thread_in_execution.prio);
 		dispatcher(PROCST_BLOQ);
@@ -150,12 +184,32 @@ int cwait(csem_t *sem) {
 }
 
 int csignal(csem_t *sem) {
+
+	if(numberOfCreatedThreads == 0) 
+	{
+		int initializedCorrectly = InitializeCThreads();
+		if(initializedCorrectly != 0)
+		{
+			return ERRO_INIT;
+		}
+	}
+
 	sem->count++;
 	return semaforo_retira_um_da_fila_de_bloqueados(sem);
 }
 
 int cidentify (char *name, int size) {
-    	char components[] = "Amaury Teixeira Cassola 287704\nBruno Ramos Toresan 291332\nDavid Mees Knijnik 264489";
+	
+	if(numberOfCreatedThreads == 0) 
+	{
+		int initializedCorrectly = InitializeCThreads();
+		if(initializedCorrectly != 0)
+		{
+			return ERRO_INIT;
+		}
+	}
+
+    char components[] = "Amaury Teixeira Cassola 287704\nBruno Ramos Toresan 291332\nDavid Mees Knijnik 264489";
 	strncpy(name, components, size);
 	return CODIGO_SUCESSO;
 }
