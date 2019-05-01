@@ -32,12 +32,10 @@ int ccreate (void* (*start)(void*), void *arg, int prio) {
 	
 	//Initializes the end context of the thread
 	getcontext(endExecContext);
-	printf("\nget context endExecContext");
 	endExecContext->uc_stack.ss_sp = (char*) malloc(STACK_SIZE * sizeof(char));
 	endExecContext->uc_stack.ss_size = STACK_SIZE;
 	endExecContext->uc_link = NULL;
 	makecontext(endExecContext, (void (*) (void)) endExecScheduler, 0);
-	printf("\nmake context endExecContext\n");
     //Initializes the new thread's TCB
     newThread = (TCB_t*)malloc(sizeof(TCB_t));
     newThread->prio = prio;
