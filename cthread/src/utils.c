@@ -242,8 +242,6 @@ int InitializeCThreads()
 }
 
 void* endExecScheduler(void *arg) {
-	printf("endExecScheduler");
-	exit(0);
 	TCB_t threadToExecute;
 	//free(thread_in_execution);
 	threadToExecute = escalonador();
@@ -286,6 +284,7 @@ void* cjoin_release(void *block_releaser_in) {
   
 	//troca o contexto para end_thread para finalizar a thread
 	endExecContext = (ucontext_t *) malloc(sizeof(ucontext_t));
+	getcontext(endExecContext);
 	endExecContext->uc_stack.ss_sp = (char*) malloc(STACK_SIZE * sizeof(char));
 	endExecContext->uc_stack.ss_size = STACK_SIZE;
 	endExecContext->uc_link = NULL;
