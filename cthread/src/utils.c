@@ -270,7 +270,7 @@ void* cjoin_release(void *block_releaser_in) {
 	}
 
 	if(tcb_block->state == PROCST_BLOQ){
-		if (desbloqueia(tidReleaser) != CODIGO_SUCESSO) {
+		if (desbloqueia(tidBlocked) != CODIGO_SUCESSO) {
 		return END_CONTEXT;
 		}
 	} else {
