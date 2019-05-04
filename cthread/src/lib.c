@@ -153,7 +153,7 @@ int csem_init(csem_t *sem, int count) {
 		}
 	}
 
-	sem = (csem_t*)malloc(sizeof(csem_t));
+	if(sem == NULL)	sem = (csem_t*)malloc(sizeof(csem_t));
 	sem->count = count;
 	sem->fila = (PFILA2)malloc(sizeof(FILA2));
 	if(	CreateFila2(sem->fila) == CODIGO_SUCESSO)

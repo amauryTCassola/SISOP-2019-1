@@ -28,10 +28,10 @@ regran: #dependências para a regran
 	$(CC) -o $(BIN_DIR)regran $(SRC_DIR)regran.c -Wall
 	
 testeObj: #teste para o negocio
-	$(CC) -c src/lib.c src/utils.c teste/testeCCreate.c -Wall
+	$(CC) -c src/lib.c src/utils.c teste/testeSemaforos.c -Wall
 	
 testeExe: #teste para o negocio
-	$(CC) lib.o utils.o testeCCreate.o bin/support.o -o testes
+	$(CC) lib.o utils.o testeSemaforos.o bin/support.o -o testes
 
 clean:
 	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*~ *~

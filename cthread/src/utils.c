@@ -37,23 +37,29 @@ void dispatcher(int new_state_thread_leaving_cpu){
 
     TCB_t thread_arriving_CPU;
     TCB_t thread_leaving_cpu = thread_in_execution;
-
-    thread_arriving_CPU = escalonador(); 
-    thread_arriving_CPU.state = PROCST_EXEC; 
 	
-    thread_leaving_cpu.state = new_state_thread_leaving_cpu; 
-
-    thread_in_execution = thread_arriving_CPU; 
+    thread_leaving_cpu.state = new_state_thread_leaving_cpu;  
 	
     if(new_state_thread_leaving_cpu == PROCST_APTO){
-           insere_na_fila_de_aptos(&thread_leaving_cpu);
-	   swapcontext(&(thread_leaving_cpu.context), &(thread_arriving_CPU.context));
+    	insere_na_fila_de_aptos(&thread_leaving_cpu);
+		thread_arriving_CPU = escalonador(); 
+    	thread_arriving_CPU.state = PROCST_EXEC; 
+		thread_in_execution = thread_arriving_CPU;
+		//para evitar o caso de tentar trocar um contexto por ele mesmo
+		if(thread_leaving_cpu.tid != thread_arriving_CPU.tid) 
+			swapcontext(&(thread_leaving_cpu.context), &(thread_arriving_CPU.context));
     }
     else if(new_state_thread_leaving_cpu == PROCST_TERMINO){
-	   setcontext(&(thread_arriving_CPU.context));
+		thread_arriving_CPU = escalonador(); 
+    	thread_arriving_CPU.state = PROCST_EXEC; 
+		thread_in_execution = thread_arriving_CPU;
+	   	setcontext(&(thread_arriving_CPU.context));
     }
     else if(new_state_thread_leaving_cpu == PROCST_BLOQ){
 	    bloqueia(&thread_leaving_cpu);
+		thread_arriving_CPU = escalonador(); 
+    	thread_arriving_CPU.state = PROCST_EXEC; 
+		thread_in_execution = thread_arriving_CPU;
 	    swapcontext(&(thread_leaving_cpu.context), &(thread_arriving_CPU.context));
     }
 }
@@ -137,9 +143,10 @@ Retorno:
 int bloqueia(TCB_t *thread){
 	
 	int status = 0;
-	
 	status = AppendFila2(blocked_queue, thread);
-	
+
+	FirstFila2(blocked_queue);
+
 	if(status == CODIGO_SUCESSO) return CODIGO_SUCESSO;
 	else return CODIGO_ERRO;
 }
@@ -151,20 +158,24 @@ Retorno:
 	Quando executada erroneamente: retorna CODIGO_ERRO
 ******************************************************************************/
 int desbloqueia(int _tid){
-	TCB_t* thread_a_ser_desbloqueada = (TCB_t*)malloc(sizeof(TCB_t));
-	int retorno_next_fila = CODIGO_SUCESSO;
-	
-	FirstFila2(blocked_queue);
-	
-	while(retorno_next_fila == CODIGO_SUCESSO){
-		if(((TCB_t*)GetAtIteratorFila2(blocked_queue))->tid == _tid) break;
-		retorno_next_fila = NextFila2(blocked_queue);
-	}
-	
-	if(retorno_next_fila == CODIGO_SUCESSO){
-		*thread_a_ser_desbloqueada = *((TCB_t*)GetAtIteratorFila2(blocked_queue));
-		DeleteAtIteratorFila2(blocked_queue);
-		return insere_na_fila_de_aptos(thread_a_ser_desbloqueada);
+	TCB_t thread_a_ser_desbloqueada;
+	int nextReturn = CODIGO_SUCESSO;
+
+	if(FirstFila2(blocked_queue) == CODIGO_SUCESSO){
+		
+		while(nextReturn == CODIGO_SUCESSO){
+			if(((TCB_t*)GetAtIteratorFila2(blocked_queue))->tid == _tid){ 
+				thread_a_ser_desbloqueada = *((TCB_t*)GetAtIteratorFila2(blocked_queue));
+				break;
+			}
+			nextReturn = NextFila2(blocked_queue);
+		}
+
+		if(nextReturn == CODIGO_SUCESSO){
+			DeleteAtIteratorFila2(blocked_queue);
+			return insere_na_fila_de_aptos(&thread_a_ser_desbloqueada);
+		}
+		else return CODIGO_ERRO;
 	}
 	else return CODIGO_ERRO;
 	
@@ -198,17 +209,19 @@ int semaforo_retira_um_da_fila_de_bloqueados(csem_t *_sem){
 	t_item_fila_bloqueados_sem item;
 	
 	if(FirstFila2(fila_origem) == CODIGO_SUCESSO){
+		
 		item.prio = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio;//prioridade do primeiro item da fila
 		item.tid = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->tid;//tid do primeiro item da fila
 		
-		while(NextFila2(fila_origem) != NXTFILA_ENDQUEUE){										//o primeiro loop encontra a maior prioridade presente na fila
+		while(NextFila2(fila_origem) == CODIGO_SUCESSO){										//o primeiro loop encontra a maior prioridade presente na fila
 			if(((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio < item.prio){
 				item.prio = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio;
 			}
 		}
+
 		
 		FirstFila2(fila_origem);
-		while(NextFila2(fila_origem) != NXTFILA_ENDQUEUE){										//o segundo loop seleciona o primeiro tid que tenha a maior prioridade presente
+		while(NextFila2(fila_origem) == CODIGO_SUCESSO){										//o segundo loop seleciona o primeiro tid que tenha a maior prioridade presente
 			if(((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->prio == item.prio){//(ou seja, garante que o iterator da fila está apontando para ele)
 				item.tid = ((t_item_fila_bloqueados_sem*)GetAtIteratorFila2(fila_origem))->tid;
 				break;
@@ -216,7 +229,7 @@ int semaforo_retira_um_da_fila_de_bloqueados(csem_t *_sem){
 		}
 	}
 	else return CODIGO_SUCESSO;//para o caso em que a fila está vazia
-	
+
 	DeleteAtIteratorFila2(fila_origem);
 	
 	return desbloqueia(item.tid);
