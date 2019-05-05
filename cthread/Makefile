@@ -36,5 +36,6 @@ testeExe: #teste para o negocio
 
 clean:
 	find $(BIN_DIR)/*.o ! -name 'support.o' -type f -exec rm -f {} +
+	rm -rf $(LIB_DIR)/*.a
 
 
