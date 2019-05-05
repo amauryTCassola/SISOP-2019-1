@@ -15,17 +15,18 @@ LIB_DIR=./lib
 INC_DIR=./include
 BIN_DIR=./bin
 SRC_DIR=./src
+OBJS= $(BIN_DIR)/support.o $(BIN_DIR)/utils.o $(BIN_DIR)/lib.o 
 
-all: regra1 regra2 regran
+all: regra1 regra2 regraLib
 
 regra1: #dependências para a regra1
-	$(CC) -o $(BIN_DIR)regra1 $(SRC_DIR)regra1.c -Wall
+	$(CC) -c  $(SRC_DIR)/utils.c -o $(BIN_DIR)/utils.o -Wall
 
 regra2: #dependências para a regra2
-	$(CC) -o $(BIN_DIR)regra2 $(SRC_DIR)regra2.c -Wall
+	$(CC) -c $(SRC_DIR)/lib.c -o $(BIN_DIR)/lib.o -Wall
 
-regran: #dependências para a regran
-	$(CC) -o $(BIN_DIR)regran $(SRC_DIR)regran.c -Wall
+regraLib: #dependências para a regraLib
+	ar crs $(LIB_DIR)/libcthread.a $(OBJS)
 	
 testeObj: #teste para o negocio
 	$(CC) -c src/lib.c src/utils.c teste/testeSemaforos.c -Wall
@@ -34,6 +35,6 @@ testeExe: #teste para o negocio
 	$(CC) lib.o utils.o testeSemaforos.o bin/support.o -o testes
 
 clean:
-	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*~ *~
+	find $(BIN_DIR)/*.o ! -name 'support.o' -type f -exec rm -f {} +
 
 
