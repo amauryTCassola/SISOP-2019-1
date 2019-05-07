@@ -158,14 +158,14 @@ Retorno:
 	Quando executada erroneamente: retorna CODIGO_ERRO
 ******************************************************************************/
 int desbloqueia(int _tid){
-	TCB_t thread_a_ser_desbloqueada;
+	TCB_t* thread_a_ser_desbloqueada;
 	int nextReturn = CODIGO_SUCESSO;
 
 	if(FirstFila2(blocked_queue) == CODIGO_SUCESSO){
 		
 		while(nextReturn == CODIGO_SUCESSO){
 			if(((TCB_t*)GetAtIteratorFila2(blocked_queue))->tid == _tid){ 
-				thread_a_ser_desbloqueada = *((TCB_t*)GetAtIteratorFila2(blocked_queue));
+				thread_a_ser_desbloqueada = (TCB_t*)GetAtIteratorFila2(blocked_queue);
 				break;
 			}
 			nextReturn = NextFila2(blocked_queue);
@@ -173,7 +173,7 @@ int desbloqueia(int _tid){
 
 		if(nextReturn == CODIGO_SUCESSO){
 			DeleteAtIteratorFila2(blocked_queue);
-			return insere_na_fila_de_aptos(&thread_a_ser_desbloqueada);
+			return insere_na_fila_de_aptos(thread_a_ser_desbloqueada);
 		}
 		else return CODIGO_ERRO;
 	}
