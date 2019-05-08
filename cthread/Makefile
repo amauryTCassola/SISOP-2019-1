@@ -27,12 +27,6 @@ regra2: #dependências para a regra2
 
 regraLib: #dependências para a regraLib
 	ar crs $(LIB_DIR)/libcthread.a $(OBJS)
-	
-testeObj: #teste para o negocio
-	$(CC) -c src/lib.c src/utils.c teste/testeSemaforos.c -Wall
-	
-testeExe: #teste para o negocio
-	$(CC) lib.o utils.o testeSemaforos.o bin/support.o -o testes
 
 clean:
 	find $(BIN_DIR)/*.o ! -name 'support.o' -type f -exec rm -f {} +
